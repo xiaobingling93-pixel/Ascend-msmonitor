@@ -1,4 +1,4 @@
-# nputrace特性
+# nputrace
 
 nputrace通过dyno CLI中的nputrace子命令开启：
 
@@ -50,7 +50,7 @@ nputrace的SUBCOMMANDS（子命令）选项如下：
 
 ## nputrace使用方法
 
-Step 1：拉起dynolog daemon进程，详细介绍请参考[dynolog介绍](./dynolog.md)
+Step 1：拉起dynolog daemon进程，详细介绍请参考[dynolog](./dynolog_instruct.md)。
 
 - 示例
 ```bash
@@ -87,4 +87,4 @@ dyno --certs-dir /home/client_certs nputrace --start-step 10 --iterations 2 --ac
 # 示例5：多机场景下向特定机器x.x.x.x发送参数信息，参数表示从第10个step开始采集，采集2个step，只采集CANN和device数据，只采集不解析，落盘路径为/tmp/profile_data
 dyno --certs-dir /home/client_certs --hostname x.x.x.x nputrace --start-step 10 --iterations 2 --activities NPU --log-file /tmp/profile_data
 ```
-nputrace落盘的数据格式和交付件介绍请参考[MindSpore&PyTorch框架性能数据文件参考](https://www.hiascend.com/document/detail/zh/mindstudio/81RC1/T&ITools/Profiling/atlasprofiling_16_0177.html)
+nputrace落盘的数据格式和交付件介绍请参见[MindSpore&PyTorch框架性能数据文件参考](https://www.hiascend.com/document/detail/zh/mindstudio/81RC1/T&ITools/Profiling/atlasprofiling_16_0177.html)。

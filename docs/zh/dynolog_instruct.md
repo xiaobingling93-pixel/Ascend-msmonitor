@@ -1,4 +1,4 @@
-# dynolog介绍
+# dynolog
 
 dynolog负责接收dyno CLI的RPC请求，触发nputrace和npu-monitor功能。
 
