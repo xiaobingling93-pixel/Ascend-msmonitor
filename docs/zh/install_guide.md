@@ -7,7 +7,7 @@
 ### clone代码
 
 ```bash
-git clone https://gitcode.com/Ascend/mstt.git
+git clone https://gitcode.com/Ascend/msmonitor.git
 ```
 
 ### 安装依赖
