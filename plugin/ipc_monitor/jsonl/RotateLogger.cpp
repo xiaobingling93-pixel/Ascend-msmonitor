@@ -17,6 +17,10 @@
 #include "jsonl/RotateLogger.h"
 #include <algorithm>
 #include <filesystem>
+#include <chrono>
+#include <iomanip>
+#include <sstream>
+#include <ctime>
 #include <glog/logging.h>
 #include "utils.h"
 
@@ -26,9 +30,30 @@ namespace dynolog_npu {
 namespace ipc_monitor {
 namespace jsonl {
 namespace {
-std::string GetMsmonitorJsonlName(const std::string &outputPath)
+inline uint64_t GetCurrentMilliseconds()
 {
-    auto identity = join({std::to_string(GetProcessId()), getCurrentTimestamp(), std::to_string(GetRankId())}, "_");
+    auto now = std::chrono::system_clock::now();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+}
+
+std::string FormatTimeStampMs(uint64_t ms)
+{
+    auto time = std::chrono::system_clock::time_point(std::chrono::milliseconds(ms));
+    std::time_t timeT = std::chrono::system_clock::to_time_t(time);
+    std::tm tm{};
+    std::stringstream ss;
+    if (localtime_r(&timeT, &tm) != nullptr) {
+        ss << std::put_time(&tm, "%Y%m%d%H%M%S");
+        constexpr int kMilliTimeWidth = 3;
+        constexpr int kMilliTimeDivisor = 1000;
+        ss << std::setw(kMilliTimeWidth) << std::setfill('0') << (ms % kMilliTimeDivisor);
+    }
+    return ss.str();
+}
+
+std::string GetMsmonitorJsonlName(uint64_t ms, const std::string &outputPath)
+{
+    auto identity = join({std::to_string(GetProcessId()), FormatTimeStampMs(ms), std::to_string(GetRankId())}, "_");
     return outputPath + "/msmonitor_" + identity + ".jsonl";
 }
 }
@@ -42,8 +67,11 @@ void RotateLogger::UnInit()
 {
     if (logFile_ != nullptr) {
         std::fclose(logFile_);
-        logFile_ = nullptr;
     }
+    logFile_ = nullptr;
+    logFiles_.clear();
+    lastLogFileTime_ = 0;
+    curLines_ = 0;
 }
 
 void RotateLogger::Log(std::string message)
@@ -76,7 +104,12 @@ bool RotateLogger::OpenNewFile()
         std::fclose(logFile_);
         logFile_ = nullptr;
     }
-    auto fileName = GetMsmonitorJsonlName(logDir_);
+    auto curTime = GetCurrentMilliseconds();
+    if (lastLogFileTime_ >= curTime) {
+        curTime = lastLogFileTime_ + 1;
+    }
+    lastLogFileTime_ = curTime;
+    auto fileName = GetMsmonitorJsonlName(lastLogFileTime_, logDir_);
     if (!PathUtils::CreateFile(fileName)) {
         LOG(ERROR) << "RotateLogger create log file failed, path: " << fileName;
         return false;
