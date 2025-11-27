@@ -56,8 +56,13 @@ uint32_t GetRingBufferCapacity()
     uint32_t capacity = DEFAULT_CAPACITY;
     if (!capacityStr.empty()) {
         if (Str2Uint32(capacity, capacityStr)) {
-            capacity = std::clamp(capacity, MIN_CAPACITY, MAX_CAPACITY);
-            return capacity;
+            auto clampedCapacity = std::clamp(capacity, MIN_CAPACITY, MAX_CAPACITY);
+            if (clampedCapacity != capacity) {
+                LOG(WARNING) << "Jsonl GetRingBufferCapacity capacity: " << capacity
+                             << " is out of range [" << MIN_CAPACITY << ", " << MAX_CAPACITY << "],"
+                             << " clamped to: " << clampedCapacity;
+            }
+            return clampedCapacity;
         } else {
             LOG(WARNING) << "Jsonl GetRingBufferCapacity invalid capacity: " << capacityStr
                          << ", use default capacity: " << DEFAULT_CAPACITY;
@@ -74,11 +79,11 @@ uint32_t GetDataDumpMaxInterval()
     std::string intervalStr = (intervalEnvVal != nullptr ? intervalEnvVal : "");
     uint32_t interval = DEFAULT_INTERVAL;
     if (!intervalStr.empty()) {
-        if (Str2Uint32(interval, intervalStr)) {
-            interval = std::max(interval, MIN_INTERVAL);
+        if (Str2Uint32(interval, intervalStr) && interval >= MIN_INTERVAL) {
             return interval;
         } else {
             LOG(WARNING) << "Jsonl GetDataDumpMaxInterval invalid interval: " << intervalStr
+                         << " interval must >= " << MIN_INTERVAL
                          << ", use default interval: " << DEFAULT_INTERVAL;
         }
     }
@@ -102,8 +107,12 @@ void JsonlProcessManager::RunPreTask()
 {
     sessionStartTime_ = getCurrentTimestamp64();
     LOG(INFO) << "JsonlProcessManager data will be save to: " << savePath_;
-    dataDumper_.Init(savePath_, GetRingBufferCapacity(), GetDataDumpMaxInterval());
+    auto capacity = GetRingBufferCapacity();
+    auto maxInterval = GetDataDumpMaxInterval();
+    dataDumper_.Init(savePath_, capacity, maxInterval);
     dataDumper_.Start();
+    LOG(INFO) << "JsonlProcessManager data dump max interval: " << maxInterval
+              << ", ring buffer capacity: " << capacity;
 }
 
 void JsonlProcessManager::ExecuteTask()
