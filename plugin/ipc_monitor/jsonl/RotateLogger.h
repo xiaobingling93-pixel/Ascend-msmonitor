@@ -32,6 +32,7 @@ public:
     ~RotateLogger();
     void UnInit();
     void Log(std::string message);
+    void Flush();
 
 private:
     bool OpenNewFile();

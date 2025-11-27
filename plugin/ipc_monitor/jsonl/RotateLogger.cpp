@@ -63,6 +63,13 @@ void RotateLogger::Log(std::string message)
     ++curLines_;
 }
 
+void RotateLogger::Flush()
+{
+    if (logFile_ != nullptr) {
+        std::fflush(logFile_);
+    }
+}
+
 bool RotateLogger::OpenNewFile()
 {
     if (logFile_ != nullptr) {
