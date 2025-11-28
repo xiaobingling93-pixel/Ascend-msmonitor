@@ -143,6 +143,9 @@ void JsonlDataDumper::Run()
             auto curTime = std::chrono::steady_clock::now();
             if (std::chrono::duration_cast<std::chrono::milliseconds>(curTime - lastDumpTime_) >= maxDumpIntervalMs_) {
                 DumpData();
+                rotateLogger_->Flush();
+                LOG(INFO) << "JsonlDataDumper DumpData for timeout, timeout: "
+                          << maxDumpIntervalMs_.count() << "ms";
             } else {
                 usleep(kMaxWaitTimeUs);
             }

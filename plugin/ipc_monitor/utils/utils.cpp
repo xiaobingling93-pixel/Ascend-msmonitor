@@ -422,7 +422,7 @@ std::string PathUtils::DirName(const std::string &path)
     if (fsPath.empty()) {
         return "";
     }
-    return fsPath.parent_path().filename().string();
+    return fsPath.parent_path().string();
 }
 
 bool PathUtils::CreateFile(const std::string &path)
