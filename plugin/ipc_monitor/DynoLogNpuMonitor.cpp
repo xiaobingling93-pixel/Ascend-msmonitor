@@ -64,8 +64,8 @@ ErrCode DynoLogNpuMonitor::DealMonitorReq(MsptiMonitorCfg& cmd)
     auto msptiMonitor = MsptiMonitor::GetInstance();
     if (cmd.monitorStop) {
         if (msptiMonitor->IsStarted()) {
-            LOG(INFO) << "Stop mspti monitor thread successfully";
             msptiMonitor->Stop();
+            LOG(INFO) << "Stop mspti monitor thread successfully";
         }
         return ErrCode::SUC;
     }
@@ -84,8 +84,8 @@ ErrCode DynoLogNpuMonitor::DealMonitorReq(MsptiMonitorCfg& cmd)
             msptiMonitor->SetExportType(cmd.export_type);
         }
 
-        LOG(INFO) << "Start mspti monitor thread successfully";
         msptiMonitor->Start();
+        LOG(INFO) << "Start mspti monitor thread successfully";
     }
 
     if (msptiMonitor->IsStarted() && !cmd.enableActivities.empty()) {

@@ -36,11 +36,16 @@ uint32_t GetRotateLogLines()
     uint32_t lines = DEFAULT_LINES;
     if (!linesStr.empty()) {
         if (Str2Uint32(lines, linesStr)) {
-            lines = std::clamp(lines, MIN_LINES, MAX_LINES);
-            return lines;
+            auto clampedLines = std::clamp(lines, MIN_LINES, MAX_LINES);
+            if (clampedLines != lines) {
+                LOG(WARNING) << "Jsonl GetRotateLogLines lines: " << lines
+                             << " is out of range [" << MIN_LINES << ", " << MAX_LINES << "],"
+                             << " clamped to " << clampedLines;
+            }
+            return clampedLines;
         } else {
             LOG(WARNING) << "Jsonl GetRotateLogLines invalid lines: " << linesStr
-                         << ", use default lines: " << DEFAULT_LINES;
+                         << ", use default rotate log lines: " << DEFAULT_LINES;
         }
     }
     return DEFAULT_LINES;
@@ -120,7 +125,7 @@ void JsonlDataDumper::DumpData()
             break;
         }
         std::string encodeData = json->dump() + "\n";
-        rotateLogger_->Log(encodeData);
+        rotateLogger_->Log(std::move(encodeData));
         ++batchSize;
     }
     lastDumpTime_ = std::chrono::steady_clock::now();
