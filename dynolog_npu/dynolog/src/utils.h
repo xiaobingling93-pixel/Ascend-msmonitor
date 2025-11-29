@@ -20,7 +20,6 @@
 #include <string>
 
 namespace dynolog {
-std::string Rstrip(const std::string &str1, const std::string &str2);
 struct PathUtils {
     static bool DirPathCheck(const std::string &path);
     static bool Access(const std::string &path, const int &mode);
@@ -29,6 +28,7 @@ struct PathUtils {
     static bool IsFile(const std::string &path);
     static bool IsWritableByOthers(const std::string &path);
     static bool IsOwner(const std::string &path);
+    static std::string GetAbsolutePath(const std::string &path);
 };
 bool IsRoot();
 bool CheckJsonDepth(const std::string &json_str);

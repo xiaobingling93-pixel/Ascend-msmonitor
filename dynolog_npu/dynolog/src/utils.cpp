@@ -20,6 +20,7 @@
 #include <climits>
 #include <cstdint>
 #include <cstring>
+#include <filesystem>
 #include <sys/stat.h>
 #include <pwd.h>
 #include <unordered_map>
@@ -38,12 +39,6 @@ const std::unordered_map<std::string, std::string> INVALID_CHAR = {
     {"\\", "\\\\"}, {"%", "\\%"}, {">", "\\>"}, {"<", "\\<"}, {"|", "\\|"},
     {"&", "\\&"}, {"$", "\\$"}
 };
-}
-
-std::string Rstrip(const std::string &str1, const std::string &str2)
-{
-    size_t end = str1.find_last_not_of(str2);
-    return end == std::string::npos ? "" : str1.substr(0, end + 1);
 }
 
 bool PathUtils::Access(const std::string &path, const int &mode)
@@ -66,9 +61,8 @@ bool PathUtils::IsSoftLink(const std::string &path)
         LOG(ERROR) << "The file path is empty.";
         return false;
     }
-    std::string tmpPath = Rstrip(path, "./");
     struct stat fileStat;
-    if (lstat(tmpPath.c_str(), &fileStat) != 0) {
+    if (lstat(path.c_str(), &fileStat) != 0) {
         LOG(ERROR) << "The file stat failed, path: " << path;
         return false;
     }
@@ -113,6 +107,20 @@ bool PathUtils::IsOwner(const std::string &path)
     return true;
 }
 
+std::string PathUtils::GetAbsolutePath(const std::string &path)
+{
+    try {
+        std::string absPath = std::filesystem::absolute(path).lexically_normal().string();
+        if (absPath != "/" && !absPath.empty() && absPath.back() == '/') {
+            absPath.pop_back();
+        }
+        return absPath;
+    } catch (const std::filesystem::filesystem_error& e) {
+        LOG(ERROR) << "Failed to get absolute path: " << e.what();
+        return "";
+    }
+}
+
 bool PathUtils::DirPathCheck(const std::string &path)
 {
     if (path.empty()) {
@@ -129,31 +137,32 @@ bool PathUtils::DirPathCheck(const std::string &path)
             return false;
         }
     }
+    std::string absPath = GetAbsolutePath(path);
     if (!Exist(path)) {
-        LOG(ERROR) << "The path does not exist: " << path;
+        LOG(ERROR) << "The path does not exists: " << absPath;
         return false;
     }
-    if (IsFile(path)) {
-        LOG(ERROR) << "The path is a file: " << path;
+    if (IsFile(absPath)) {
+        LOG(ERROR) << "The path is a file: " << absPath;
         return false;
     }
-    if (IsSoftLink(path)) {
-        LOG(ERROR) << "The path is a soft link: " << path;
+    if (IsSoftLink(absPath)) {
+        LOG(ERROR) << "The path is a soft link: " << absPath;
         return false;
     }
     if (IsRoot()) {
         return true;
     }
-    if (!IsOwner(path)) {
-        LOG(ERROR) << "The path is not owned by current user: " << path;
+    if (!IsOwner(absPath)) {
+        LOG(ERROR) << "The path is not owned by current user: " << absPath;
         return false;
     }
-    if (!Access(path, INPUT_DIR_CHECK_MODE)) {
-        LOG(ERROR) << "The path is not readable: " << path;
+    if (!Access(absPath, INPUT_DIR_CHECK_MODE)) {
+        LOG(ERROR) << "The path is not readable: " << absPath;
         return false;
     }
-    if (IsWritableByOthers(path)) {
-        LOG(ERROR) << "The path is writable by others: " << path;
+    if (IsWritableByOthers(absPath)) {
+        LOG(ERROR) << "The path is writable by others: " << absPath;
         return false;
     }
     return true;
