@@ -45,6 +45,7 @@ private:
     int32_t maxFiles_{-1};
     uint32_t curLines_{0};
     std::FILE* logFile_{nullptr};
+    uint64_t lastLogFileTime_{0};
     std::vector<std::string> logFiles_;
 };
 } // namespace jsonl
