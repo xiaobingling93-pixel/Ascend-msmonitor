@@ -83,9 +83,6 @@ public:
     void FinalizeDyno()
     {
         DynoLogNpuMonitor::GetInstance()->Finalize();
-        NpuStatus npuStatus;
-        DynoLogNpuMonitor::GetInstance()->UpdateNpuStatus(npuStatus, MSG_TYPE_TRACE_STATUS);
-        DynoLogNpuMonitor::GetInstance()->UpdateNpuStatus(npuStatus, MSG_TYPE_MONITOR_STATUS);
     }
 
     void UpdateProfilerStatus(std::unordered_map<std::string, std::string>& status)

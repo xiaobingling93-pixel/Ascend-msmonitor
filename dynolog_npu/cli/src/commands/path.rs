@@ -5,10 +5,13 @@
 // LICENSE file in the root directory of this source tree.
 
 use std::ffi::CString;
-use std::path::Path;
 use nix::unistd::Uid;
 use nix::sys::stat::{self, Mode};
 use libc::{R_OK, W_OK, X_OK};
+use std::env;
+use std::io;
+use std::path::{Path, PathBuf};
+use path_clean::PathClean;
 
 use super::utils;
 
@@ -35,19 +38,10 @@ const INVALID_CHAR: &[(&str, &str)] = &[
     ("$", "\\$"),
 ];
 
-fn rstrip(s: &str, chars: &str) -> String {
-    s.trim_end_matches(|c| chars.contains(c)).to_string()
-}
-
 pub struct PathUtils;
 
 impl PathUtils {
     pub fn access(path: &str, mode: i32) -> bool {
-        if path.is_empty() {
-            println!("ERROR: The file path is empty.");
-            return false;
-        }
-
         let c_path = match CString::new(path) {
             Ok(p) => p,
             Err(_) => {
@@ -62,21 +56,13 @@ impl PathUtils {
     }
 
     /// 检查文件或目录是否存在
-    pub fn exist(path: &str) -> bool {
+    pub fn exists(path: &Path) -> bool {
         Path::new(path).exists()
     }
 
     /// 判断是否为软链接
-    pub fn is_soft_link(path: &str) -> bool {
-        if path.is_empty() {
-            println!("ERROR: The file path is empty.");
-            return false;
-        }
-
-        let trimmed = rstrip(path, "./");
-        let p = Path::new(&trimmed);
-
-        match p.symlink_metadata() {
+    pub fn is_soft_link(path: &Path) -> bool {
+        match path.symlink_metadata() {
             Ok(metadata) => metadata.file_type().is_symlink(),
             Err(e) => {
                 println!("ERROR: The file lstat failed: {}", e);
@@ -85,14 +71,8 @@ impl PathUtils {
         }
     }
 
-    pub fn is_file(path: &str) -> bool {
-        if path.is_empty() {
-            println!("ERROR: The file path is empty.");
-            return false;
-        }
-
-        let p = Path::new(path);
-        match p.metadata() {
+    pub fn is_file(path: &Path) -> bool {
+        match path.metadata() {
             Ok(metadata) => metadata.is_file(),
             Err(e) => {
                 println!("ERROR: The file stat failed: {}", e);
@@ -101,8 +81,8 @@ impl PathUtils {
         }
     }
 
-    pub fn is_writable_by_others(path: &str) -> bool {
-        let file_stat = match stat::stat(Path::new(path)) {
+    pub fn is_writable_by_others(path: &Path) -> bool {
+        let file_stat = match stat::stat(path) {
             Ok(stat) => stat,
             Err(_) => return true,
         };
@@ -110,14 +90,23 @@ impl PathUtils {
         mode.contains(Mode::S_IWGRP) || mode.contains(Mode::S_IWOTH)
     }
 
-    pub fn is_owner(path: &str) -> bool {
-        let file_stat = match stat::stat(Path::new(path)) {
+    pub fn is_owner(path: &Path) -> bool {
+        let file_stat = match stat::stat(path) {
             Ok(stat) => stat,
             Err(_) => return false,
         };
         let current_uid = Uid::current();
         let path_uid = Uid::from_raw(file_stat.st_uid);
         current_uid == path_uid
+    }
+
+    pub fn get_absolute_path(path: &str) -> Result<PathBuf, io::Error> {
+        let abs = if Path::new(path).is_absolute() {
+            PathBuf::from(path)
+        } else {
+            env::current_dir()?.join(path)
+        };
+        Ok(abs.clean())
     }
 
     pub fn check_dir(path: &str, should_exist: bool, is_input: bool) -> bool {
@@ -138,22 +127,31 @@ impl PathUtils {
             }
         }
 
-        if !Self::exist(path) {
+        let path_buf = match Self::get_absolute_path(path) {
+            Ok(p) => p,
+            Err(e) => {
+                println!("ERROR: Failed to get absolute path for '{}': {}", path, e);
+                return false;
+            }
+        };
+        let path_ref = path_buf.as_path();
+
+        if !Self::exists(path_ref) {
             if should_exist {
-                println!("ERROR: The path does not exist: {}", path);
+                println!("ERROR: The path does not exist: {:?}", path_ref);
                 return false;
             } else {
                 return true;
             }
         }
 
-        if Self::is_file(path) {
-            println!("ERROR: The path is a file: {}", path);
+        if Self::is_file(path_ref) {
+            println!("ERROR: The path is a file: {:?}", path_ref);
             return false;
         }
 
-        if Self::is_soft_link(path) {
-            println!("ERROR: The path is a soft link: {}", path);
+        if Self::is_soft_link(path_ref) {
+            println!("ERROR: The path is a soft link: {:?}", path_ref);
             return false;
         }
 
@@ -161,8 +159,8 @@ impl PathUtils {
             return true;
         }
 
-        if !Self::is_owner(path) {
-            println!("ERROR: The path is not owned by current user: {}", path);
+        if !Self::is_owner(path_ref) {
+            println!("ERROR: The path is not owned by current user: {:?}", path_ref);
             return false;
         }
 
@@ -178,8 +176,8 @@ impl PathUtils {
             }
         }
 
-        if Self::is_writable_by_others(path) {
-            println!("ERROR: The path is writable by others: {}", path);
+        if Self::is_writable_by_others(path_ref) {
+            println!("ERROR: The path is writable by others: {:?}", path_ref);
             return false;
         }
         true
