@@ -1,16 +1,24 @@
-## MindSpore框架下msMonitor的使用方法
+# MindSpore框架下msMonitor的使用方法
 
-### 1. 动态profiling自定义for循环方式
+## 简介
+
+在MindSpore框架下使用msmonitor组件，用于监控MindSpore模型的训练过程中的性能指标，支持动态profiling自定义for循环方式和callback方式。
+
+## 功能介绍
+
+**使用示例**
+
+1. 动态profiling自定义for循环方式
 
 Step 1：拉起dynolog daemon进程
 
 Step 2：使能dynolog环境变量
 
-Step 3：配置msMonitor日志路径
+Step 3：配置msmonitor日志路径
 
 - 前3步以及第5步操作请参见[npu-monitor](./npumonitor_instruct.md)或[nputrace](./nputrace_instruct.md)。
 
-Step 4: 拉起训练任务
+Step 4：拉起训练任务
 在训练任务中实例化DynamicProfilerMonitor对象，且在每一次训练后，调用step()方法。
 
 - 示例代码如下：
@@ -56,7 +64,7 @@ if __name__ == '__main__':
 
 Step 5：使用dyno CLI使能trace dump或npu-monitor
 
-### 2. 动态profiling callback方式
+1. 动态profiling callback方式
 该使能方式与动态profiling自定义for循环方式一致，唯一区别是将step()方法适配在step_begin、step_end回调函数中。
 - 示例代码如下：
 ```python

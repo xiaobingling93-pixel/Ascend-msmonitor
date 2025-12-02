@@ -1,19 +1,35 @@
 # nputrace
 
+## 简介
+
+nputrace工具的作用是获取到框架、CANN以及device的详细性能数据。
+
+## 使用前准备
+
+**环境准备**
+
+安装msmonitor工具。详情请参见《[msmonitor安装指南](./install_guide.md)》，推荐使用下载软件包安装。
+
 nputrace通过dyno CLI中的nputrace子命令开启：
 
 ```bash
 dyno --certs-dir <CERT_DIR> nputrace [SUBCOMMANDS]
 ```
-**说明**：
+
+**约束**：
+
 - 1. dyno和dynolog中--certs-dir传入参数值须保持一致；
 - 2. <CERT_DIR>可传入证书路径，如果不使用TLS证书密钥，设置为NO_CERTS。
+
+## nputrace功能介绍
 
 查看nputrace支持的命令和帮助
 
 ```bash
 dyno nputrace --help
 ```
+
+**参数说明**
 
 nputrace的SUBCOMMANDS（子命令）选项如下：
 
@@ -48,7 +64,7 @@ nputrace的SUBCOMMANDS（子命令）选项如下：
 | --sys-io              | action | 采集NIC、ROCE数据。设置参数采集，默认不采集                                                                                                                                                                                                                                                          |     Y     |      Y      | N |
 | --sys-interconnection | action | 采集集合通信带宽数据（HCCS）、PCIe、片间传输带宽数据。设置参数采集，默认不采集                                                                                                                                                                                                                                        |     Y     |      Y      | N |
 
-## nputrace使用方法
+**使用示例**
 
 Step 1：拉起dynolog daemon进程，详细介绍请参考[dynolog](./dynolog_instruct.md)。
 
@@ -81,10 +97,12 @@ dyno --certs-dir /home/client_certs nputrace --start-step -1 --iterations 2 --ac
 dyno --certs-dir /home/client_certs nputrace --start-step 10 --iterations 2 --activities NPU --analyse --data-simplification true --log-file /tmp/profile_data
 
 # 示例4：从第10个step开始采集，采集2个step，只采集CANN和device数据，只采集不解析，落盘路径为/tmp/profile_data
-
 dyno --certs-dir /home/client_certs nputrace --start-step 10 --iterations 2 --activities NPU --log-file /tmp/profile_data
 
 # 示例5：多机场景下向特定机器x.x.x.x发送参数信息，参数表示从第10个step开始采集，采集2个step，只采集CANN和device数据，只采集不解析，落盘路径为/tmp/profile_data
 dyno --certs-dir /home/client_certs --hostname x.x.x.x nputrace --start-step 10 --iterations 2 --activities NPU --log-file /tmp/profile_data
 ```
+
+## 输出结果文件说明
+
 nputrace落盘的数据格式和交付件介绍请参见[MindSpore&PyTorch框架性能数据文件参考](https://www.hiascend.com/document/detail/zh/mindstudio/81RC1/T&ITools/Profiling/atlasprofiling_16_0177.html)。
