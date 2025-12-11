@@ -2,8 +2,8 @@
 
 | msmonitor版本 | 发布日期       | 配套CANN版本 | 配套torch_npu版本 | 下载链接                                                                 | 校验码                                                                 | 配套MindSpore版本 |
 |---------------|----------------|--------------|--------------|--------------------------------------------------------------------------|------------------------------------------------------------------------|--------------|
-| 8.1.0         | 2025-07-11     | 8.1.RC1及以上      | v7.1.0及以上  | [aarch64_8.1.0.zip](https://ptdbg.obs.cn-north-4.myhuaweicloud.com/profiler/msmonitor/8.1.0/aarch64_8.1.0.zip) | ce136120c0288291cc0a7803b1efc8c8416c6105e9d54c17ccf2e2510869fada       |  2.7.0-rc1及以上 |
-|               | 2025-07-11     | 8.1.RC1及以上      | v7.1.0及以上  | [x86_8.1.0.zip](https://ptdbg.obs.cn-north-4.myhuaweicloud.com/profiler/msmonitor/8.1.0/x86_8.1.0.zip)           | 097d11c7994793b6389b19259269ceb3b6b7ac5ed77da3949b3f09da2103b7f2        | 2.7.0-rc1及以上 |
+| 8.1.0(aarch64) | 2025-07-11     | 8.1.RC1及以上      | v7.1.0及以上  | [aarch64_8.1.0.zip](https://ptdbg.obs.cn-north-4.myhuaweicloud.com/profiler/msmonitor/8.1.0/aarch64_8.1.0.zip) | ce136120c0288291cc0a7803b1efc8c8416c6105e9d54c17ccf2e2510869fada       |  2.7.0-rc1及以上 |
+| 8.1.0(x86)     | 2025-07-11     | 8.1.RC1及以上      | v7.1.0及以上  | [x86_8.1.0.zip](https://ptdbg.obs.cn-north-4.myhuaweicloud.com/profiler/msmonitor/8.1.0/x86_8.1.0.zip)           | 097d11c7994793b6389b19259269ceb3b6b7ac5ed77da3949b3f09da2103b7f2        | 2.7.0-rc1及以上 |
 
 Step 1: 根据aarch64还是x86选择对应安装包链接下载。
 

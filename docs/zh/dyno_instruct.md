@@ -1,9 +1,12 @@
-# dyno介绍
+# dyno
+
+## 简介
 
 dyno负责发送dyno CLI的RPC请求，触发nputrace和npu-monitor功能。
 
+## dyno功能介绍
 
-## dyno常用参数
+**参数说明**
 
 | 命令        | 参数类型 | 说明                                                         | 是否必选 |
 | ----------- | -------- | ------------------------------------------------------------ | :------: |
@@ -13,7 +16,7 @@ dyno负责发送dyno CLI的RPC请求，触发nputrace和npu-monitor功能。
 | --help      | action   | 用于获取dyno命令的使用帮助，查看所有可用选项和功能说明。     |    N     |
 | --version   | action   | 用于查询dyno CLI的版本信息。                                 |    N     |
 
-## dyno常用子命令
+- dyno常用子命令
 
 | 命令        | 说明                                                         |
 | ----------- | ------------------------------------------------------------ |
@@ -22,4 +25,3 @@ dyno负责发送dyno CLI的RPC请求，触发nputrace和npu-monitor功能。
 | npu-monitor | 发送npu-monitor相关消息到dynolog daemon，详情请参见[npu-monitor](./npumonitor_instruct.md)。 |
 | help        | 获取dyno命令的使用帮助，查看所有可用选项和功能说明。         |
 | version     | 查询dynolog daemon的版本信息。                               |
-

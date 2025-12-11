@@ -1,4 +1,4 @@
-# msmonitor-plugin编包指导
+# msmonitor-plugin编译安装指导
 ## 模块说明
 ### IPCMonitor
 提供IPC(Inter-Process Communication)通信接口，用于实现

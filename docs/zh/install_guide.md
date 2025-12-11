@@ -1,4 +1,4 @@
-# msMonitor安装指南
+# msmonitor安装指南
 ## 下载软件包安装（推荐）
 最新的预编译安装包和版本依赖请参见《[版本说明](./release_notes.md)》，并根据指导进行校验和安装。
 
@@ -101,4 +101,4 @@ client_certs
 
 2. msmonitor-plugin wheel包编译。
 
-   msmonitor-plugin wheel包提供IPCMonitor，MsptiMonitor等公共能力，使用nputrace和npu-monitor功能前必须安装该wheel包，具体编译安装指导请参见[msmonitor-plugin编包指导](../../plugin/README.md)。
+   msmonitor-plugin wheel包提供IPCMonitor，MsptiMonitor等公共能力，使用nputrace和npu-monitor功能前必须安装该wheel包，具体编译安装指导请参见[msmonitor-plugin编译安装包指导](../../plugin/README.md)。
