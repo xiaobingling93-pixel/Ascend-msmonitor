@@ -56,6 +56,11 @@ uint32_t GetRingBufferCapacity()
     uint32_t capacity = DEFAULT_CAPACITY;
     if (!capacityStr.empty()) {
         if (Str2Uint32(capacity, capacityStr)) {
+            if ((capacity & (capacity - 1)) != 0) {
+                LOG(WARNING) << "Jsonl GetRingBufferCapacity capacity: " << capacity
+                             << " is not power of 2, use default capacity: " << DEFAULT_CAPACITY;
+                capacity = DEFAULT_CAPACITY;
+            }
             auto clampedCapacity = std::clamp(capacity, MIN_CAPACITY, MAX_CAPACITY);
             if (clampedCapacity != capacity) {
                 LOG(WARNING) << "Jsonl GetRingBufferCapacity capacity: " << capacity
