@@ -97,7 +97,7 @@ dyno --certs-dir /home/client_certs nputrace --start-step 10 --iterations 2 --ac
 
 ### 🟢 status状态查询
 ```
-dyno --certs-dir /home/client_certs nputrace status
+dyno --certs-dir <CERT_DIR> status  # dyno和dynolog中--certs-dir传入参数值须保持一致；<CERT_DIR>可传入证书路径，如果不使用TLS证书密钥，设置为NO_CERTS。
 ```
 输入以上命令后，会打印一个json字符串，例如：{"current_step":1,"npumonitor":"Idle","nputrace":"Ready","start_step":5,"stop_step":10}。
 
