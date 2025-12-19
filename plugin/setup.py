@@ -59,7 +59,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name="msmonitor_plugin",
-    version="8.1.0",
+    version="8.3.0",
     description="msMonitor plugin",
     packages=find_namespace_packages(include=["IPCMonitor*"]),
     include_package_data=True,
