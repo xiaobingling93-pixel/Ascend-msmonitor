@@ -1,8 +1,59 @@
-# msmonitor安装指南
-## 下载软件包安装（推荐）
-最新的预编译安装包和版本依赖请参见《[版本说明](./release_notes.md)》，并根据指导进行校验和安装。
+# msMonitor工具安装指南
+## 软件包安装
 
-## 源码编译安装
+推荐使用软件包安装，步骤如下：
+
+1. 根据[版本配套说明](../../README.md#版本配套说明)选择对应软件包并下载到Linux安装环境。
+
+2. 校验包完整性。
+
+   进入zip包所在目录，执行如下命令。
+
+   ```bash
+   sha256sum {name}.zip
+   ```
+
+   {name}为zip包名称。
+
+   若回显呈现对应版本zip包一致的**校验码**，则表示下载了正确的性能工具zip安装包。示例如下：
+
+   ```bash
+   sha256sum aarch64_8.1.0.zip
+   ```
+
+3. 安装whl包。
+
+   ```bash
+   # 解压压缩包
+   mkdir x86
+   unzip x86_8.1.0.zip -d x86
+   
+   # 进入解压后的目录
+   cd x86
+   
+   # 安装whl包，须选择与当前环境Python版本一致的whl包
+   pip install msmonitor_plugin-{mindstudio_version}-cp{python_version}-cp{python_version}-linux_{system_architecture}.whl
+   ```
+
+4. 安装dynolog。
+
+5. 有以下三种安装方式可供选择，根据用户服务器系统自行选择：
+
+   - 方式一：使用deb软件包安装（适用于Debian/Ubuntu等系统）。
+
+     ```bash
+     dpkg -i --force-overwrite dynolog*.deb
+     ```
+
+   - 方式二：使用rpm软件包安装（适用于RedHat/Fedora/openSUSE等系统）。
+
+     ```bash
+     rpm -ivh dynolog-*.rpm --nodeps
+     ```
+
+   - 方式三：直接复制bin文件夹到系统中。
+
+## 编译安装
 
 ### clone代码
 
