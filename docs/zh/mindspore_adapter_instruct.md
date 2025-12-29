@@ -2,7 +2,7 @@
 
 ## 简介
 
-在MindSpore框架下使用msmonitor组件，用于监控MindSpore模型的训练过程中的性能指标，支持动态profiling自定义for循环方式和callback方式。
+在MindSpore框架下使用msMonitor组件，用于监控MindSpore模型的训练过程中的性能指标，支持动态profiling自定义for循环方式和callback方式。
 
 ## 功能介绍
 
@@ -14,7 +14,7 @@ Step 1：拉起dynolog daemon进程
 
 Step 2：使能dynolog环境变量
 
-Step 3：配置msmonitor日志路径
+Step 3：配置msMonitor日志路径
 
 - 前3步以及第5步操作请参见[npu-monitor](./npumonitor_instruct.md)或[nputrace](./nputrace_instruct.md)。
 

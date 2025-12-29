@@ -61,7 +61,7 @@ npu-monitor的SUBCOMMANDS（子命令）选项如下。
    export MSMONITOR_USE_DAEMON=1
    ```
 
-3. （可选）配置Msmonitor日志路径，默认路径为当前目录下的msmonitor_log。
+3. （可选）配置msMonitor日志路径，默认路径为当前目录下的msmonitor_log。
 
    ```bash
    export MSMONITOR_LOG_PATH=<LOG PATH>
@@ -118,7 +118,7 @@ npu-monitor的SUBCOMMANDS（子命令）选项如下。
 pip install tensorboard
 
 # 运行TensorBoard
-tensorboard --logdir=<metric_log_dir> # metric_log_dir为Step1中dynolog命令行中--metric_log_dir参数指定的路径
+tensorboard --logdir=<metric_log_dir> # metric_log_dir为使用示例dynolog命令行中--metric_log_dir参数指定的路径
 
 # 从浏览器访问http://localhost:6006即可看到对应可视化图表, 其中localhost为服务器的ip地址，6006为TensorBoard默认端口
 ```
