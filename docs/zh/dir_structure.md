@@ -39,7 +39,7 @@
 │   ├── build.sh                                             # 主构建脚本
 │   ├── gen_dyno_patches.sh                                  # dyno补丁生成脚本
 │   ├── run_st.sh                                            # st测试运行脚本
-│   └── run_st.sh                                            # ut测试运行脚本
+│   └── run_ut.sh                                            # ut测试运行脚本
 ├── test                                                     # 测试代码目录
 │   ├── st                                                   # 系统测试用例目录
 │   └── ut                                                   # 单元测试用例目录

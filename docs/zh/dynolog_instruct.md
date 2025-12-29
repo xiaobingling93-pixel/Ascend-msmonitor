@@ -18,7 +18,7 @@ dynolog负责接收dyno CLI的RPC请求，触发nputrace和npu-monitor功能。
 
 **使用示例**
 
-- dynolog daemon可以通过systemd或者命令行任意一种方法开启
+- dynolog daemon可以通过systemd或命令行任意一种方法启动
 
 ```bash
 # 方法1：使用systemd拉起service
