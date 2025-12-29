@@ -16,7 +16,6 @@
 │       ├── npumonitor_instruct.md                           # npu-monitor功能使用说明
 │       ├── nputrace_instruct.md                             # nputrace功能使用说明
 │       ├── public_ip_address.md                             # 公网地址说明
-│       ├── release_notes.md                                 # 版本发布说明
 │       └── security_statement.md                            # 安全声明
 ├── dynolog_npu                                              # dynolog_npu模块代码目录
 │   ├── CMakeLists.txt
