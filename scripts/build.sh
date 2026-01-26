@@ -137,13 +137,11 @@ if [ -z "$PACKAGE_TYPE" ]; then
 elif [ "$PACKAGE_TYPE" = "deb" ]; then
     ARCHITECTURE=$(uname -m)
     CONTROL_FILE="scripts/debian/control"
-    ARCH="amd64"
     if [[ "$ARCHITECTURE" == "aarch64" ]]; then
         sed -i 's/^Architecture: .*/Architecture: arm64/' "$CONTROL_FILE"
-        ARCH="arm64"
         echo "dpkg Architecture set to arm64"
     fi
-    export ARCH=$ARCH
+    export ARCH=$ARCHITECTURE
     bash scripts/debian/make_deb.sh
     unset ARCH
     mv dynolog_*.deb ../../
