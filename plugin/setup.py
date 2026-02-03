@@ -58,9 +58,9 @@ class CMakeBuild(build_ext):
 
 
 setup(
-    name="msmonitor_plugin",
-    version="8.3.0",
-    description="msMonitor plugin",
+    name="mindstudio_monitor",
+    version="26.0.0",
+    description="mindstudio monitor",
     packages=find_namespace_packages(include=["IPCMonitor*"]),
     include_package_data=True,
     ext_modules=[CMakeExtension('IPCMonitor')],
