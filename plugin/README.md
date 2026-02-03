@@ -1,4 +1,4 @@
-# msmonitor-plugin模块说明
+# mindstudio_monitor模块说明
 
 ## IPCMonitor
 
@@ -26,4 +26,4 @@
 
 ## 安装方式
 
-msmonitor-plugin模块安装请参见《[msMonitor工具安装指南](../docs/zh/install_guide.md)》。
+mindstudio_monitor模块安装请参见《[msMonitor工具安装指南](../docs/zh/install_guide.md)》。

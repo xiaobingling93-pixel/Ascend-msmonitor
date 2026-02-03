@@ -74,6 +74,16 @@ rpmbuild -bb SPECS/dynolog.spec
 tree .
 rpmfile=$(ls "$RPMDIR/RPMS/${ARCH}/dynolog"-*rpm)
 rpm -qi "$rpmfile"
+
+if [[ $(grep -o "-" <<< "$rpmfile" | wc -l) -ge 2 ]] ; then
+  reversed_file=$(echo "$rpmfile" | rev)
+  reversed_file_fixed=$(echo "$reversed_file" | sed 's/-/_/2; s/-/_/1')
+  new_rpmfile=$(echo "$reversed_file_fixed" | rev)
+  if [[ "$rpmfile" != "$new_rpmfile" ]] ; then
+    mv "$rpmfile" "$new_rpmfile"
+  fi
+fi
+rpmfile=$(ls "$RPMDIR/RPMS/${ARCH}/dynolog"_*rpm)
 cp "$rpmfile" "$DYNOROOT/"
 
 {
