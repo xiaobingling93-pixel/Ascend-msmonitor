@@ -291,7 +291,10 @@ std::vector<std::string> split(const std::string& str, char delimiter)
     std::istringstream tokenStream(str);
 
     while (std::getline(tokenStream, token, delimiter)) {
-        tokens.push_back(token);
+        if (token.empty()) {
+            continue;
+        }
+        tokens.push_back(trim(token));
     }
 
     return tokens;

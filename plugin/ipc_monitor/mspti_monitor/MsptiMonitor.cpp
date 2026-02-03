@@ -15,6 +15,7 @@
  */
 #include "MsptiMonitor.h"
 
+#include <algorithm>
 #include <unistd.h>
 #include <unordered_map>
 #include <nlohmann/json.hpp>
@@ -30,6 +31,17 @@ namespace {
 constexpr size_t DEFAULT_BUFFER_SIZE = 8 * 1024 * 1024;
 constexpr size_t MAX_BUFFER_SIZE = 256 * 1024 * 1024;
 constexpr uint32_t MAX_ALLOC_CNT = MAX_BUFFER_SIZE / DEFAULT_BUFFER_SIZE;
+const std::unordered_set<msptiActivityKind> FILTER_WHITE_LIST = {
+    MSPTI_ACTIVITY_KIND_MEMORY,
+    MSPTI_ACTIVITY_KIND_MEMSET,
+    MSPTI_ACTIVITY_KIND_MEMCPY
+};
+const std::unordered_set<msptiActivityFlag> FLAGS_WITH_VALID_NAME = {
+    MSPTI_ACTIVITY_FLAG_MARKER_INSTANTANEOUS,
+    MSPTI_ACTIVITY_FLAG_MARKER_INSTANTANEOUS_WITH_DEVICE,
+    MSPTI_ACTIVITY_FLAG_MARKER_START,
+    MSPTI_ACTIVITY_FLAG_MARKER_START_WITH_DEVICE
+};
 }
 
 namespace dynolog_npu {
@@ -101,6 +113,10 @@ void MsptiMonitor::Uninit()
         dataProcessor_ = nullptr;
     }
     savePath_.clear();
+    {
+        std::lock_guard<std::mutex> lock(filterMtx_);
+        filterItems_.clear();
+    }
 }
 
 bool MsptiMonitor::CheckAndSetSavePath(const std::string &path)
@@ -174,6 +190,73 @@ std::set<msptiActivityKind> MsptiMonitor::GetEnabledActivities()
 {
     std::lock_guard<std::mutex> lock(activityMtx_);
     return enabledActivities_;
+}
+
+void MsptiMonitor::SetFilterItems(const msptiFilterItems& filterItems)
+{
+    std::lock_guard<std::mutex> lock(filterMtx_);
+    filterItems_ = filterItems;
+}
+
+bool MsptiMonitor::ShouldKeepRecord(msptiActivity *record)
+{
+    if (record == nullptr) {
+        LOG(ERROR) << "MsptiData record is null";
+        return false;
+    }
+    msptiFilterItems currFilterItems;
+    {
+        std::lock_guard<std::mutex> lock(filterMtx_);
+        currFilterItems = filterItems_;
+    }
+    if (currFilterItems.empty() || FILTER_WHITE_LIST.find(record->kind) != FILTER_WHITE_LIST.end()) {
+        return true;
+    }
+    auto it = currFilterItems.find(record->kind);
+    if (it == currFilterItems.end()) {
+        return false;
+    }
+    std::string opName;
+    switch (record->kind) {
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_API: {
+            auto* data = ReinterpretConvert<msptiActivityApi*>(record);
+            opName = (data != nullptr) ? data->name : "";
+            break;
+        }
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_COMMUNICATION: {
+            auto* data = ReinterpretConvert<msptiActivityCommunication*>(record);
+            opName = (data != nullptr) ? data->name : "";
+            break;
+        }
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_KERNEL: {
+            auto* data = ReinterpretConvert<msptiActivityKernel*>(record);
+            opName = (data != nullptr) ? data->name : "";
+            break;
+        }
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_MARKER: {
+            auto* data = ReinterpretConvert<msptiActivityMarker*>(record);
+            if (data == nullptr) {
+                return false;
+            }
+            if (data->sourceKind == msptiActivitySourceKind::MSPTI_ACTIVITY_SOURCE_KIND_HOST &&
+                FLAGS_WITH_VALID_NAME.find(data->flag) != FLAGS_WITH_VALID_NAME.end()) {
+                opName = data->name;
+                break;
+            } else {
+                return true;
+            }
+        }
+        default:
+            return false;
+    }
+    if (opName.empty()) {
+        return false;
+    }
+    return std::any_of(it->second.begin(), it->second.end(), 
+        [&opName](const auto& filterOp) {
+            return opName.find(filterOp) != std::string::npos;
+        }
+    );
 }
 
 void MsptiMonitor::Run()
@@ -255,7 +338,9 @@ void MsptiMonitor::BufferComplete(uint8_t *buffer, size_t size, size_t validSize
         do {
             status = msptiActivityGetNextRecord(buffer, validSize, &record);
             if (status == MSPTI_SUCCESS) {
-                BufferConsume(record);
+                if (GetInstance()->ShouldKeepRecord(record)) {
+                    BufferConsume(record);
+                }
             } else if (status == MSPTI_ERROR_MAX_LIMIT_REACHED) {
                 break;
             } else {

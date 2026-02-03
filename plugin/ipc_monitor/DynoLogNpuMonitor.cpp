@@ -83,11 +83,12 @@ ErrCode DynoLogNpuMonitor::DealMonitorReq(MsptiMonitorCfg& cmd)
         if (!msptiMonitor->IsMetricMode()) {
             msptiMonitor->SetExportType(cmd.export_type);
         }
-
         msptiMonitor->Start();
         LOG(INFO) << "Start mspti monitor thread successfully";
     }
-
+    if (msptiMonitor->IsStarted()) {
+        msptiMonitor->SetFilterItems(cmd.filterItems);
+    }
     if (msptiMonitor->IsStarted() && !cmd.enableActivities.empty()) {
         auto curActivities = msptiMonitor->GetEnabledActivities();
         std::vector<msptiActivityKind> enableKinds;

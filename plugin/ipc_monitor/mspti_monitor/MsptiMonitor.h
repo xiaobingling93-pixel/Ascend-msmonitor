@@ -20,6 +20,7 @@
 #include <condition_variable>
 #include <mutex>
 #include <set>
+#include "InputParser.h"
 #include "mspti.h"
 #include "thread.h"
 #include "singleton.h"
@@ -49,6 +50,8 @@ public:
     {
         clusterConfigData_ = configData;
     }
+    void SetFilterItems(const msptiFilterItems& filterItems);
+    bool ShouldKeepRecord(msptiActivity *record);
     const std::unordered_map<std::string, std::string>& GetClusterConfigData() const { return clusterConfigData_; }
 
 private:
@@ -72,6 +75,8 @@ private:
     std::atomic<uint32_t> flushInterval_{0};
     std::string savePath_;
     std::string export_type_;
+    std::mutex filterMtx_;
+    msptiFilterItems filterItems_;
     std::shared_ptr<MsptiDataProcessBase> dataProcessor_{nullptr};
     std::unordered_map<std::string, std::string> clusterConfigData_;
 };
