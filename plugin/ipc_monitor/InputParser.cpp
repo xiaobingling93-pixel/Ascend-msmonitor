@@ -43,7 +43,10 @@ const std::unordered_map<std::string, msptiActivityKind> kindStrMap = {
     {"Memory", MSPTI_ACTIVITY_KIND_MEMORY},
     {"MemSet", MSPTI_ACTIVITY_KIND_MEMSET},
     {"MemCpy", MSPTI_ACTIVITY_KIND_MEMCPY},
-    {"Communication", MSPTI_ACTIVITY_KIND_COMMUNICATION}
+    {"Communication", MSPTI_ACTIVITY_KIND_COMMUNICATION},
+    {"AclAPI", MSPTI_ACTIVITY_KIND_ACL_API},
+    {"NodeAPI", MSPTI_ACTIVITY_KIND_NODE_API},
+    {"RuntimeAPI", MSPTI_ACTIVITY_KIND_RUNTIME_API}
 };
 
 bool isValidKind(const std::string& kindStrs)
@@ -94,7 +97,7 @@ struct Rule {
 
 std::unordered_map<std::string, Rule> rules = {
     {MSPTI_ACTIVITY_KIND_KEY, {true, isValidKind,
-        "valid values: Marker, Kernel, API, Hccl, Memory, MemSet, MemCpy, Communication"}},
+        "valid values: Marker, Kernel, API, Hccl, Memory, MemSet, MemCpy, Communication, AclAPI, NodeAPI, RuntimeAPI"}},
     {REPORT_INTERVAL_S_KEY, {true, isUint32, "valid values: uint32"}},
     {NPU_MONITOR_START_KEY, {true, isBool, "valid values: true/True, false/False"}},
     {NPU_MONITOR_STOP_KEY, {true, isBool, "valid values: true/True, false/False"}},
@@ -171,7 +174,7 @@ MsptiMonitorCfg InputParser::DynoLogGetOpts(std::unordered_map<std::string, std:
     auto filterItems = str2FilterItems(cmd[NPU_MONITOR_FILTER]);
     uint32_t reportTimes = 0;
     Str2Uint32(reportTimes, cmd[REPORT_INTERVAL_S_KEY]);
-    bool startSwitch = false; 
+    bool startSwitch = false;
     Str2Bool(startSwitch, cmd[NPU_MONITOR_START_KEY]);
     bool endSwitch = false;
     Str2Bool(endSwitch, cmd[NPU_MONITOR_STOP_KEY]);

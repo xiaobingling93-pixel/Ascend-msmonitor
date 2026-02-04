@@ -18,6 +18,7 @@
 #define IPC_MONITOR_ROTATE_LOGGER_H
 
 #include <cstdio>
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -51,4 +52,4 @@ private:
 } // namespace jsonl
 } // namespace ipc_monitor
 } // namespace dynolog_npu
-#endif
+#endif // MSMONITOR_ROTATE_LOGGER_H

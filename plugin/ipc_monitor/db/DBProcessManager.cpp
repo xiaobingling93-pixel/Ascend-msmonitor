@@ -42,6 +42,10 @@ const std::vector<std::tuple<uint16_t, std::string>> HCCL_DATA_TYPE = {
     {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_FP64, "FP64"},
     {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_BFP16, "BFP16"},
     {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INT128, "INT128"},
+    {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_HIF8, "HIF8"},
+    {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_FP8E4M3, "FP8E4M3"},
+    {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_FP8E5M2, "FP8E5M2"},
+    {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_FP8E8M0, "FP8E8M0"},
     {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INVALID_TYPE, "INVALID_TYPE"}
 };
 
@@ -61,8 +65,11 @@ const std::vector<std::tuple<std::string, std::string>> META_DATA = {
     {"SCHEMA_VERSION", "1.2.0"}
 };
 
-constexpr uint16_t API_NODE_TYPE = 10000;
-const std::vector<std::tuple<uint16_t, std::string>> API_TYPE = {
+constexpr uint16_t API_LEVEL = 10000;
+constexpr uint16_t RUNTIME_API_LEVEL = 5000;
+constexpr uint16_t NODE_API_LEVEL = 10000;
+constexpr uint16_t ACL_API_LEVEL = 20000;
+const std::vector<std::tuple<uint16_t, std::string>> API_LEVEL_MAP = {
     {5000, "runtime"},
     {5500, "communication"},
     {10000, "node"},
@@ -219,7 +226,7 @@ bool DBProcessManager::SaveConstantData()
     bool flag = true;
     flag = InsertDataToDB(HCCL_DATA_TYPE, TABLE_HCCL_DATA_TYPE, msMonitorDB_) && flag;
     flag = InsertDataToDB(MSTX_EVENT_TYPE, TABLE_MSTX_EVENT_TYPE, msMonitorDB_) && flag;
-    flag = InsertDataToDB(API_TYPE, TABLE_API_TYPE, msMonitorDB_) && flag;
+    flag = InsertDataToDB(API_LEVEL_MAP, TABLE_API_TYPE, msMonitorDB_) && flag;
     flag = InsertDataToDB(META_DATA, TABLE_META_DATA, msMonitorDB_) && flag;
 
     std::vector<std::tuple<std::string, std::string>> hostInfoData {{GetHostUid(), GetHostName()}};
@@ -325,17 +332,19 @@ void DBProcessManager::RunPostTask()
     IdPool::GetInstance()->Clear();
 }
 
-void DBProcessManager::ProcessApiData(msptiActivityApi *record)
+void DBProcessManager::ProcessApiData(msptiActivityApi *record, const uint16_t apiLevel)
 {
     uint64_t endTime = record->end;
     if (endTime < sessionStartTime_) {
         return;
     }
-    std::lock_guard<std::mutex> lock(dataMutex_);
     uint64_t name = IdPool::GetInstance()->GetUint64Id(record->name);
     uint64_t globalTid = ConcatGlobalTid(record->pt.processId, record->pt.threadId);
     uint64_t connectionId = record->correlationId;
-    apiData_.emplace_back(static_cast<uint64_t>(record->start), endTime, API_NODE_TYPE, globalTid, connectionId, name);
+
+    std::lock_guard<std::mutex> lock(dataMutex_);
+    apiData_.emplace_back(static_cast<uint64_t>(record->start), endTime, apiLevel,
+        globalTid, connectionId, name);
 }
 
 std::string DBProcessManager::ConstructCommOpName(const std::string &opName, const std::string &groupName)
@@ -384,15 +393,16 @@ void DBProcessManager::ProcessKernelData(msptiActivityKernel *record)
     if (endTime < sessionStartTime_) {
         return;
     }
-    std::lock_guard<std::mutex> lock(dataMutex_);
     uint64_t opName = IdPool::GetInstance()->GetUint64Id(record->name);
     uint64_t taskType = IdPool::GetInstance()->GetUint64Id(record->type);
     uint64_t globalTaskId = globalTaskId_.fetch_add(1);
     uint64_t NAId = IdPool::GetInstance()->GetUint64Id(NA);
-    computeTaskInfoData_.emplace_back(opName, globalTaskId, UINT32_MAX, UINT32_MAX, taskType,
-        NAId, NAId, NAId, NAId, NAId, NAId, NAId, NAId, NAId, NAId);
     uint64_t connectionId = record->correlationId;
     uint32_t deviceId = record->ds.deviceId;
+
+    std::lock_guard<std::mutex> lock(dataMutex_);
+    computeTaskInfoData_.emplace_back(opName, globalTaskId, UINT32_MAX, UINT32_MAX, taskType,
+        NAId, NAId, NAId, NAId, NAId, NAId, NAId, NAId, NAId, NAId);
     taskData_.emplace_back(static_cast<uint64_t>(record->start), endTime,
         deviceId, connectionId, globalTaskId, GetProcessId(), taskType, UINT32_MAX,
         static_cast<uint32_t>(record->ds.streamId), UINT32_MAX, UINT32_MAX);
@@ -471,7 +481,7 @@ ErrCode DBProcessManager::ConsumeMsptiData(msptiActivity *record)
     }
     switch (record->kind) {
         case msptiActivityKind::MSPTI_ACTIVITY_KIND_API:
-            ProcessApiData(ReinterpretConvert<msptiActivityApi*>(record));
+            ProcessApiData(ReinterpretConvert<msptiActivityApi*>(record), API_LEVEL);
             break;
         case msptiActivityKind::MSPTI_ACTIVITY_KIND_COMMUNICATION:
             ProcessCommunicationData(ReinterpretConvert<msptiActivityCommunication*>(record));
@@ -481,6 +491,15 @@ ErrCode DBProcessManager::ConsumeMsptiData(msptiActivity *record)
             break;
         case msptiActivityKind::MSPTI_ACTIVITY_KIND_MARKER:
             ProcessMstxData(ReinterpretConvert<msptiActivityMarker*>(record));
+            break;
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_ACL_API:
+            ProcessApiData(ReinterpretConvert<msptiActivityApi*>(record), ACL_API_LEVEL);
+            break;
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_NODE_API:
+            ProcessApiData(ReinterpretConvert<msptiActivityApi*>(record), NODE_API_LEVEL);
+            break;
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_RUNTIME_API:
+            ProcessApiData(ReinterpretConvert<msptiActivityApi*>(record), RUNTIME_API_LEVEL);
             break;
         default:
             LOG(WARNING) << record->kind << " is not supported for DBProcessManager";

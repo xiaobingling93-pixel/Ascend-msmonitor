@@ -25,19 +25,7 @@ namespace ipc_monitor {
 DynoLogNpuMonitor::DynoLogNpuMonitor()
 {
     // init glog
-    if (!google::IsGoogleLoggingInitialized()) {
-        std::string logPath;
-        if (CreateMsmonitorLogPath(logPath)) {
-            fprintf(stderr, "[INFO] [%d] Msmonitor log will record to %s\n", GetProcessId(), logPath.c_str());
-            logPath = logPath + "/msmonitor_";
-            google::InitGoogleLogging("MsMonitor");
-            google::SetStderrLogging(google::GLOG_ERROR);
-            google::SetLogDestination(google::GLOG_INFO, logPath.c_str());
-            google::SetLogFilenameExtension(".log");
-        } else {
-            fprintf(stderr, "Failed to create log path, log will not record\n");
-        }
-    }
+    InitMsMonitorLog();
     msptiActivityDisableMarkerDomain("communication");  // filter inner communication marker data for now
 }
 

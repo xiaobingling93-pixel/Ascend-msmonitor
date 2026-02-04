@@ -72,7 +72,7 @@ public:
     void RunPostTask() override;
 
 private:
-    void ProcessApiData(msptiActivityApi *record);
+    void ProcessApiData(msptiActivityApi *record, const uint16_t apiLevel);
     void ProcessCommunicationData(msptiActivityCommunication *record);
     void ProcessKernelData(msptiActivityKernel *record);
     void ProcessMstxData(msptiActivityMarker *record);

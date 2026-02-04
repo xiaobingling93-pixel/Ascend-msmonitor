@@ -24,6 +24,7 @@
 #include <unordered_map>
 #include <sys/types.h>
 #include <memory>
+#include "mspti.h"
 
 namespace dynolog_npu {
 namespace ipc_monitor {
@@ -113,6 +114,8 @@ std::string GetHostName();
 std::string GetHostUid();
 bool CreateMsmonitorLogPath(std::string& path);
 std::string GetCurrentUserHomePath();
+void InitMsMonitorLog();
+std::string GetCommunicationDataTypeName(msptiCommunicationDataType dataType);
 
 struct PathUtils {
     static bool IsFileExist(const std::string &path);

@@ -58,7 +58,7 @@ public:
     void Stop()
     {
         if (!running) {
-            LOG(WARNING) << name << "Timer task is not running.";
+            LOG(WARNING) << name << " Timer task is not running.";
             return;
         }
 
