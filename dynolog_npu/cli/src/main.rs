@@ -244,6 +244,9 @@ enum Command {
         /// Export type for NPU monitor.
         #[clap(long, value_parser = ["DB", "Jsonl"], default_value = "DB")]
         export_type: String,
+        /// Filter for NPU monitor.
+        #[clap(long, value_parser = validate_string_max_len, default_value = "")]
+        filter: String,
     }
 }
 
@@ -753,6 +756,7 @@ fn main() -> Result<()> {
             mspti_activity_kind,
             log_file,
             export_type,
+            filter,
         } => {
 
             if !log_file.is_empty() && !PathUtils::check_dir(&log_file, false, false) {
@@ -764,7 +768,8 @@ fn main() -> Result<()> {
                 report_interval_s,
                 mspti_activity_kind,
                 log_file,
-                export_type
+                export_type,
+                filter,
             };
             npumonitor::run_npumonitor(client, npu_mon_config)
         }

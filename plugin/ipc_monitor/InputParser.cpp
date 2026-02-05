@@ -33,6 +33,7 @@ const std::string NPU_MONITOR_START_KEY = "NPU_MONITOR_START";
 const std::string NPU_MONITOR_STOP_KEY = "NPU_MONITOR_STOP";
 const std::string NPU_MONITOR_SAVE_PATH = "NPU_MONITOR_LOG_FILE";
 const std::string NPU_MONITOR_EXPORT_TYPE = "NPU_MONITOR_EXPORT_TYPE";
+const std::string NPU_MONITOR_FILTER = "NPU_MONITOR_FILTER";
 
 const std::unordered_map<std::string, msptiActivityKind> kindStrMap = {
     {"Marker", MSPTI_ACTIVITY_KIND_MARKER},
@@ -137,6 +138,28 @@ std::set<msptiActivityKind> str2Kinds(const std::string& kindStrs)
     }
     return res;
 }
+
+msptiFilterItems str2FilterItems(const std::string& filterStr)
+{
+    msptiFilterItems res;
+    auto filterItems = split(filterStr, ';'); 
+    for (const auto& filterItem : filterItems) {
+        auto tmpList = split(filterItem, ':');
+        if (tmpList.size() != 2) {
+            continue;
+        }
+        auto it = kindStrMap.find(tmpList[0]);
+        if (it == kindStrMap.end()) {
+            continue;
+        }
+        auto kind = it->second;
+        auto opList = split(tmpList[1], ',');
+        for (const auto& op : opList) {
+            res[kind].emplace(op);
+        }
+    }
+    return res;
+}
 }
 
 MsptiMonitorCfg InputParser::DynoLogGetOpts(std::unordered_map<std::string, std::string>& cmd)
@@ -145,13 +168,15 @@ MsptiMonitorCfg InputParser::DynoLogGetOpts(std::unordered_map<std::string, std:
         return {{MSPTI_ACTIVITY_KIND_INVALID}, 0, false, false, false, "", ""};
     }
     auto activityKinds = str2Kinds(cmd[MSPTI_ACTIVITY_KIND_KEY]);
+    auto filterItems = str2FilterItems(cmd[NPU_MONITOR_FILTER]);
     uint32_t reportTimes = 0;
     Str2Uint32(reportTimes, cmd[REPORT_INTERVAL_S_KEY]);
     bool startSwitch = false; 
     Str2Bool(startSwitch, cmd[NPU_MONITOR_START_KEY]);
     bool endSwitch = false;
     Str2Bool(endSwitch, cmd[NPU_MONITOR_STOP_KEY]);
-    return {activityKinds, reportTimes, startSwitch, endSwitch, true, cmd[NPU_MONITOR_SAVE_PATH], cmd[NPU_MONITOR_EXPORT_TYPE]};
+    return {activityKinds, reportTimes, startSwitch, endSwitch, true, cmd[NPU_MONITOR_SAVE_PATH],
+        cmd[NPU_MONITOR_EXPORT_TYPE], filterItems};
 }
 } // namespace ipc_monitor
 } // namespace dynolog_npu

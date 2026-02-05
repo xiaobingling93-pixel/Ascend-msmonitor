@@ -17,6 +17,7 @@
 #define INPUT_PARSER_H
 
 #include <unordered_map>
+#include <unordered_set>
 #include <string>
 #include <set>
 #include "mspti.h"
@@ -25,6 +26,7 @@
 namespace dynolog_npu {
 namespace ipc_monitor {
 
+using msptiFilterItems = std::unordered_map<msptiActivityKind, std::unordered_set<std::string>>;
 struct MsptiMonitorCfg {
     std::set<msptiActivityKind> enableActivities;
     uint32_t reportIntervals;
@@ -33,6 +35,7 @@ struct MsptiMonitorCfg {
     bool isMonitor;
     std::string savePath;
     std::string export_type;
+    msptiFilterItems filterItems;
 };
 
 
