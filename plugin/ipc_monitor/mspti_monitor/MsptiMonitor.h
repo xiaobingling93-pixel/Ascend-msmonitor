@@ -45,7 +45,11 @@ public:
     void Uninit();
     bool CheckAndSetSavePath(const std::string& path);
     bool IsMetricMode() const { return savePath_.empty(); }
-    void SetExportType(const std::string& type) { export_type_ = type; }
+    void SetExportType(const std::string& type) { exportType_ = type; }
+    void SetDataProcessor(std::shared_ptr<MsptiDataProcessBase> dataProcessor)
+    {
+        dataProcessor_ = dataProcessor;
+    }
     void SetClusterConfigData(const std::unordered_map<std::string, std::string>& configData)
     {
         clusterConfigData_ = configData;
@@ -74,7 +78,7 @@ private:
     std::atomic<bool> checkFlush_{false};
     std::atomic<uint32_t> flushInterval_{0};
     std::string savePath_;
-    std::string export_type_;
+    std::string exportType_;
     std::mutex filterMtx_;
     msptiFilterItems filterItems_;
     std::shared_ptr<MsptiDataProcessBase> dataProcessor_{nullptr};

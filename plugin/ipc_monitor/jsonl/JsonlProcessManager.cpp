@@ -24,28 +24,6 @@ namespace dynolog_npu {
 namespace ipc_monitor {
 namespace jsonl {
 namespace {
-std::string GetCommunicationDataTypeName(msptiCommunicationDataType dataType)
-{
-    static const std::unordered_map<msptiCommunicationDataType, std::string> DATA_TYPE = {
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INT8, "INT8"},
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INT16, "INT16"},
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INT32, "INT32"},
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INT64, "INT64"},
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_UINT8, "UINT8"},
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_UINT16, "UINT16"},
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_UINT32, "UINT32"},
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_UINT64, "UINT64"},
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_FP16, "FP16"},
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_FP32, "FP32"},
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_FP64, "FP64"},
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_BFP16, "BFP16"},
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INT128, "INT128"},
-        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INVALID_TYPE, "INVALID_TYPE"}
-    };
-    auto it = DATA_TYPE.find(dataType);
-    return it != DATA_TYPE.end() ? it->second : "INVALID_TYPE";
-}
-
 uint32_t GetRingBufferCapacity()
 {
     constexpr uint32_t DEFAULT_CAPACITY = 1024 * 512;
@@ -94,6 +72,11 @@ uint32_t GetDataDumpMaxInterval()
     }
     return DEFAULT_INTERVAL;
 }
+
+const std::string API_KIND = "API";
+const std::string ACL_API_KIND = "AclAPI";
+const std::string NODE_API_KIND = "NodeAPI";
+const std::string RUNTIME_API_KIND = "RuntimeAPI";
 } // namecpace
 
 void JsonlProcessManager::SetReportInterval(uint32_t interval)
@@ -137,6 +120,7 @@ void JsonlProcessManager::RunPostTask()
     sessionStartTime_ = 0;
     reportInterval_.store(0);
     deviceSet_.clear();
+    mstxMarkerHostData_.clear();
     mstxRangeHostData_.clear();
     mstxRangeDeviceData_.clear();
     savePath_.clear();
@@ -182,15 +166,15 @@ bool JsonlProcessManager::SaveRankDeviceData()
     return true;
 }
 
-void JsonlProcessManager::ProcessApiData(msptiActivityApi *record)
+void JsonlProcessManager::ProcessApiData(msptiActivityApi *record, const std::string &kind)
 {
     uint64_t endTime = record->end;
     if (endTime < sessionStartTime_) {
         return;
     }
-    std::lock_guard<std::mutex> lock(dataMutex_);
+
     nlohmann::json json = {
-        {"kind", "API"},
+        {"kind", kind},
         {"name", std::string(record->name)},
         {"startNs", static_cast<uint64_t>(record->start)},
         {"endNs", endTime},
@@ -198,7 +182,9 @@ void JsonlProcessManager::ProcessApiData(msptiActivityApi *record)
         {"threadId", static_cast<uint32_t>(record->pt.threadId)},
         {"correlationId", static_cast<uint64_t>(record->correlationId)}
     };
-    dataDumper_.Record(std::make_unique<nlohmann::json>(json));
+
+    std::lock_guard<std::mutex> lock(dataMutex_);
+    dataDumper_.Record(std::make_unique<nlohmann::json>(std::move(json)));
 }
 
 void JsonlProcessManager::ProcessCommunicationData(msptiActivityCommunication *record)
@@ -207,7 +193,7 @@ void JsonlProcessManager::ProcessCommunicationData(msptiActivityCommunication *r
     if (endTime < sessionStartTime_) {
         return;
     }
-    std::lock_guard<std::mutex> lock(dataMutex_);
+
     uint32_t deviceId = record->ds.deviceId;
     nlohmann::json json = {
         {"kind", "Communication"},
@@ -222,7 +208,9 @@ void JsonlProcessManager::ProcessCommunicationData(msptiActivityCommunication *r
         {"algType", std::string(record->algType)},
         {"correlationId", static_cast<uint64_t>(record->correlationId)}
     };
-    dataDumper_.Record(std::make_unique<nlohmann::json>(json));
+
+    std::lock_guard<std::mutex> lock(dataMutex_);
+    dataDumper_.Record(std::make_unique<nlohmann::json>(std::move(json)));
     deviceSet_.insert(deviceId);
 }
 
@@ -232,7 +220,7 @@ void JsonlProcessManager::ProcessKernelData(msptiActivityKernel *record)
     if (endTime < sessionStartTime_) {
         return;
     }
-    std::lock_guard<std::mutex> lock(dataMutex_);
+
     uint32_t deviceId = record->ds.deviceId;
     nlohmann::json json = {
         {"kind", "Kernel"},
@@ -244,7 +232,9 @@ void JsonlProcessManager::ProcessKernelData(msptiActivityKernel *record)
         {"type", std::string(record->type)},
         {"correlationId", static_cast<uint64_t>(record->correlationId)}
     };
-    dataDumper_.Record(std::make_unique<nlohmann::json>(json));
+
+    std::lock_guard<std::mutex> lock(dataMutex_);
+    dataDumper_.Record(std::make_unique<nlohmann::json>(std::move(json)));
     deviceSet_.insert(deviceId);
 }
 
@@ -328,7 +318,7 @@ void JsonlProcessManager::ProcessMstxDeviceData(msptiActivityMarker *record)
             {"streamId", static_cast<uint32_t>(record->objectId.ds.streamId)},
             {"id", connectionId}
         };
-        dataDumper_.Record(std::make_unique<nlohmann::json>(json));
+        dataDumper_.Record(std::make_unique<nlohmann::json>(std::move(json)));
         if (it != mstxMarkerHostData_.end()) {
             mstxMarkerHostData_.erase(it);
         }
@@ -349,7 +339,7 @@ void JsonlProcessManager::ProcessMstxDeviceData(msptiActivityMarker *record)
                 {"streamId", static_cast<uint32_t>(record->objectId.ds.streamId)},
                 {"id", connectionId}
             };
-            dataDumper_.Record(std::make_unique<nlohmann::json>(json));
+            dataDumper_.Record(std::make_unique<nlohmann::json>(std::move(json)));
             mstxRangeDeviceData_.erase(it);
             if (hostIt != mstxRangeHostData_.end()) {
                 mstxRangeHostData_.erase(hostIt);
@@ -367,7 +357,7 @@ ErrCode JsonlProcessManager::ConsumeMsptiData(msptiActivity *record)
     }
     switch (record->kind) {
         case msptiActivityKind::MSPTI_ACTIVITY_KIND_API:
-            ProcessApiData(ReinterpretConvert<msptiActivityApi*>(record));
+            ProcessApiData(ReinterpretConvert<msptiActivityApi*>(record), API_KIND);
             break;
         case msptiActivityKind::MSPTI_ACTIVITY_KIND_COMMUNICATION:
             ProcessCommunicationData(ReinterpretConvert<msptiActivityCommunication*>(record));
@@ -377,6 +367,15 @@ ErrCode JsonlProcessManager::ConsumeMsptiData(msptiActivity *record)
             break;
         case msptiActivityKind::MSPTI_ACTIVITY_KIND_MARKER:
             ProcessMstxData(ReinterpretConvert<msptiActivityMarker*>(record));
+            break;
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_ACL_API:
+            ProcessApiData(ReinterpretConvert<msptiActivityApi*>(record), ACL_API_KIND);
+            break;
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_NODE_API:
+            ProcessApiData(ReinterpretConvert<msptiActivityApi*>(record), NODE_API_KIND);
+            break;
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_RUNTIME_API:
+            ProcessApiData(ReinterpretConvert<msptiActivityApi*>(record), RUNTIME_API_KIND);
             break;
         default:
             LOG(WARNING) << record->kind << " is not supported for JsonlProcessManager";

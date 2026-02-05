@@ -602,5 +602,47 @@ std::string GetCurrentUserHomePath()
     }();
     return homePath;
 }
+void InitMsMonitorLog()
+{
+    if (!google::IsGoogleLoggingInitialized()) {
+        std::string logPath;
+        if (CreateMsmonitorLogPath(logPath)) {
+            fprintf(stderr, "[INFO] [%d] msMonitor log will record to %s\n", GetProcessId(), logPath.c_str());
+            logPath = logPath + "/msmonitor_";
+            google::InitGoogleLogging("MsMonitor");
+            google::SetStderrLogging(google::GLOG_ERROR);
+            google::SetLogDestination(google::GLOG_INFO, logPath.c_str());
+            google::SetLogFilenameExtension(".log");
+        } else {
+            fprintf(stderr, "Failed to create log path, log will not record\n");
+        }
+    }
+}
+
+std::string GetCommunicationDataTypeName(msptiCommunicationDataType dataType)
+{
+    static const std::unordered_map<msptiCommunicationDataType, std::string> DATA_TYPE = {
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INT8, "INT8"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INT16, "INT16"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INT32, "INT32"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INT64, "INT64"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_UINT8, "UINT8"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_UINT16, "UINT16"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_UINT32, "UINT32"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_UINT64, "UINT64"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_FP16, "FP16"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_FP32, "FP32"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_FP64, "FP64"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_BFP16, "BFP16"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INT128, "INT128"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_HIF8, "HIF8"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_FP8E4M3, "FP8E4M3"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_FP8E5M2, "FP8E5M2"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_FP8E8M0, "FP8E8M0"},
+        {msptiCommunicationDataType::MSPTI_ACTIVITY_COMMUNICATION_INVALID_TYPE, "INVALID_TYPE"}
+    };
+    auto it = DATA_TYPE.find(dataType);
+    return it != DATA_TYPE.end() ? it->second : "INVALID_TYPE";
+}
 } // namespace ipc_monitor
 } // namespace dynolog_npu

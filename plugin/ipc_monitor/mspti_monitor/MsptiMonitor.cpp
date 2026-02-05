@@ -56,19 +56,23 @@ void MsptiMonitor::Start()
     if (start_.load()) {
         return;
     }
-    if (savePath_.empty()) {
-        std::shared_ptr<metric::MetricManager> metricManager{nullptr};
-        MakeSharedPtr(metricManager);
-        dataProcessor_ = metricManager;
-    } else {
-        if (export_type_ == MSPTI_EXPORT_TYPE_DB) {
-            std::shared_ptr<db::DBProcessManager> dbProcessManager{nullptr};
-            MakeSharedPtr(dbProcessManager, savePath_);
-            dataProcessor_ = dbProcessManager;
-        } else if (export_type_ == MSPTI_EXPORT_TYPE_JSONL) {
-            std::shared_ptr<jsonl::JsonlProcessManager> jsonlProcessManager{nullptr};
-            MakeSharedPtr(jsonlProcessManager, savePath_);
-            dataProcessor_ = jsonlProcessManager;
+    if (dataProcessor_ == nullptr) {
+        if (savePath_.empty()) {
+            std::shared_ptr<metric::MetricManager> metricManager{nullptr};
+            MakeSharedPtr(metricManager);
+            dataProcessor_ = metricManager;
+        } else {
+            if (exportType_ == MSPTI_EXPORT_TYPE_DB) {
+                std::shared_ptr<db::DBProcessManager> dbProcessManager{nullptr};
+                MakeSharedPtr(dbProcessManager, savePath_);
+                dataProcessor_ = dbProcessManager;
+            } else if (exportType_ == MSPTI_EXPORT_TYPE_JSONL) {
+                std::shared_ptr<jsonl::JsonlProcessManager> jsonlProcessManager{nullptr};
+                MakeSharedPtr(jsonlProcessManager, savePath_);
+                dataProcessor_ = jsonlProcessManager;
+            } else {
+                LOG(ERROR) << "DataProcessor init failed, export_type: " << exportType_ << " is invalid.";
+            }
         }
     }
     if (dataProcessor_ == nullptr) {
@@ -113,6 +117,7 @@ void MsptiMonitor::Uninit()
         dataProcessor_ = nullptr;
     }
     savePath_.clear();
+    exportType_.clear();
     {
         std::lock_guard<std::mutex> lock(filterMtx_);
         filterItems_.clear();
@@ -218,7 +223,10 @@ bool MsptiMonitor::ShouldKeepRecord(msptiActivity *record)
     }
     std::string opName;
     switch (record->kind) {
-        case msptiActivityKind::MSPTI_ACTIVITY_KIND_API: {
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_API:
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_ACL_API:
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_NODE_API:
+        case msptiActivityKind::MSPTI_ACTIVITY_KIND_RUNTIME_API: {
             auto* data = ReinterpretConvert<msptiActivityApi*>(record);
             opName = (data != nullptr) ? data->name : "";
             break;
@@ -252,7 +260,7 @@ bool MsptiMonitor::ShouldKeepRecord(msptiActivity *record)
     if (opName.empty()) {
         return false;
     }
-    return std::any_of(it->second.begin(), it->second.end(), 
+    return std::any_of(it->second.begin(), it->second.end(),
         [&opName](const auto& filterOp) {
             return opName.find(filterOp) != std::string::npos;
         }
