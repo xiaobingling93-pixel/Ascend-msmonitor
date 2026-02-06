@@ -1,4 +1,4 @@
-# Copyright (c) 2025, Huawei Technologies Co., Ltd.
+# Copyright (c) 2026, Huawei Technologies Co., Ltd.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0  (the "License");
@@ -13,5 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .dynamic_monitor_proxy import PyDynamicMonitorProxy
-from .monitor import Monitor, ActivityKind
+import sys
+import os
+import importlib
+
+so_path = os.path.join(os.path.dirname(__file__), "lib64")
+sys.path.append(os.path.realpath(so_path))
+ipcmonitor_C_module = importlib.import_module("IPCMonitor_C")

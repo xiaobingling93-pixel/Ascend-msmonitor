@@ -113,7 +113,7 @@ msMonitor详细版本配套关系及对应软件包下载链接如下：
    - 方式二：使用rpm软件包安装（适用于RedHat/Fedora/openSUSE等系统）。
 
      ```
-     rpm -ivh dynolog-*.rpm --nodeps
+     rpm -ivh dynolog*.rpm --nodeps
      ```
 
 ## 快速入门
@@ -201,6 +201,14 @@ npu-monitor特性为用户提供轻量化监控关键指标的能力，npu-monit
 nputrace特性为用户提供动态触发AI框架（[Ascend PyTorch Profiler](https://www.hiascend.com/document/detail/zh/mindstudio/81RC1/T&ITools/Profiling/atlasprofiling_16_0090.html)、[MindSpore Profiler](https://www.hiascend.com/document/detail/zh/mindstudio/81RC1/T&ITools/Profiling/atlasprofiling_16_0087.html)）采集解析的能力，即实现模型拉起后不需要中断模型运行，可多次触发不同配置Profiler采集解析。采集的性能数据可以使用[MindStudio Insight](https://www.hiascend.com/document/detail/zh/mindstudio/81RC1/GUI_baseddevelopmenttool/msascendinsightug/Insight_userguide_0002.html)进行可视化，效果图如下。
 具体使用方式请参见[nputrace](./docs/zh/nputrace_instruct.md)，MindSpore框架下使用方式请参见[MindSpore框架下msMonitor的使用方法](./docs/zh/mindspore_adapter_instruct.md)。
 ![MindStudio Insight TimeLine可视化效果图](./docs/zh/figures/mindstudio_insight.png)
+
+### Monitor特性
+提供简单易用接口，采集计算类算子、通信类算子、API、Runtime API、Mstx等性能数据，用户可以根据需要选择采集的指标，具体使用方式请参见[Monitor](./docs/zh/monitor_feature.md)。
+
+## API参考
+[mindstudio_monitor模块接口参考](./docs/zh/mindstudio_monitor_api_reference.md)，包含以下特性接口：
+- 与dynolog组件交互接口，请参见 “PyDynamicMonitorProxy接口说明” 章节。
+- Monitor特性接口，请参见 “Monitor特性接口说明” 章节。
 
 ## FAQ
 FAQ汇总了在使用msMonitor工具过程中可能遇到的问题，具体请参见[FAQ](./docs/zh/faq.md)。

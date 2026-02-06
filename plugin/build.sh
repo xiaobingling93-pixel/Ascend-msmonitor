@@ -1,5 +1,8 @@
 #!/bin/bash
 
+cur_dir="$(cd "$(dirname "$0")"; pwd -P)"
+cd ${cur_dir}
+
 # install pybind11
 pip install pybind11
 
