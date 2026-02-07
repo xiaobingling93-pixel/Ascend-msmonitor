@@ -190,6 +190,9 @@ enum Command {
         /// Whether to analyse the data after collection.
         #[clap(long, action)]
         analyse: bool,
+        /// Whether to enable async mode.
+        #[clap(long, action)]
+        async_mode: bool,
         /// Whether to collect L2 cache.
         #[clap(long, action)]
         l2_cache: bool,
@@ -681,6 +684,7 @@ fn main() -> Result<()> {
             with_modules,
             activities,
             analyse,
+            async_mode,
             profiler_level,
             aic_metrics,
             l2_cache,
@@ -728,6 +732,7 @@ fn main() -> Result<()> {
                 with_modules,
                 activities,
                 analyse,
+                async_mode,
                 profiler_level,
                 aic_metrics,
                 l2_cache,

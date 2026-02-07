@@ -53,6 +53,7 @@ pub struct NpuTraceOptions {
     pub with_modules: bool,
     pub activities: String,
     pub analyse: bool,
+    pub async_mode: bool,
     pub profiler_level: String,
     pub aic_metrics: String,
     pub l2_cache: bool,
@@ -79,6 +80,7 @@ PROFILE_WITH_FLOPS={}
 PROFILE_WITH_MODULES={}
 PROFILE_ACTIVITIES={}
 PROFILE_ANALYSE={}
+PROFILE_ASYNC_MODE={}
 PROFILE_PROFILER_LEVEL={}
 PROFILE_AIC_METRICS={}
 PROFILE_L2_CACHE={}
@@ -99,6 +101,7 @@ PROFILE_MSTX_DOMAIN_EXCLUDE={}"#,
             self.with_modules,
             self.activities,
             self.analyse,
+            self.async_mode,
             self.profiler_level,
             self.aic_metrics,
             self.l2_cache,
@@ -238,6 +241,7 @@ ACTIVITIES_ITERATIONS=1000"#
                 with_modules: true,
                 activities: "CPU,NPU".to_string(),
                 analyse: false,
+                async_mode: false,
                 profiler_level: "Level0".to_string(),
                 aic_metrics: "AiCoreNone".to_string(),
                 l2_cache: true,
@@ -265,6 +269,7 @@ PROFILE_WITH_FLOPS=true
 PROFILE_WITH_MODULES=true
 PROFILE_ACTIVITIES=CPU,NPU
 PROFILE_ANALYSE=false
+PROFILE_ASYNC_MODE=false
 PROFILE_PROFILER_LEVEL=Level0
 PROFILE_AIC_METRICS=AiCoreNone
 PROFILE_L2_CACHE=true
