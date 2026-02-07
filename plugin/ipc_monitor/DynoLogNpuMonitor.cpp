@@ -67,7 +67,9 @@ ErrCode DynoLogNpuMonitor::DealMonitorReq(MsptiMonitorCfg& cmd)
             LOG(ERROR) << "Invalid log path, mspti monitor start failed";
             return ErrCode::PERMISSION;
         }
-
+        if (cmd.duration > 0.0f) {
+            msptiMonitor->SetDuration(cmd.duration);
+        }
         if (!msptiMonitor->IsMetricMode()) {
             msptiMonitor->SetExportType(cmd.export_type);
         }
