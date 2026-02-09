@@ -27,7 +27,7 @@ namespace metric {
 std::string ApiMetric::seriesToJson()
 {
     nlohmann::json jsonMsg;
-    jsonMsg["kind"] = "API";
+    jsonMsg["kind"] = kind;
     jsonMsg["deviceId"] = -1;
     jsonMsg["duration"] = duration;
     jsonMsg["timestamp"] = timestamp;
@@ -68,6 +68,7 @@ std::vector<ApiMetric> MetricApiProcess::AggregatedData()
     apiMetric.duration = ans;
     apiMetric.deviceId = -1;
     apiMetric.timestamp = getCurrentTimestamp64();
+    apiMetric.kind = apiKind;
     return {apiMetric};
 }
 
@@ -83,6 +84,6 @@ void MetricApiProcess::Clear()
 {
     records.clear();
 }
-}
-}
-}
+} // namespace metric
+} // namespace ipc_monitor
+} // namespace dynolog_npu

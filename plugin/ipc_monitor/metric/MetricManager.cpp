@@ -32,13 +32,16 @@ MetricManager::MetricManager(): MsptiDataProcessBase("MetricManager"),
     kindSwitchs_(MSPTI_ACTIVITY_KIND_COUNT), consumeStatus_(MSPTI_ACTIVITY_KIND_COUNT) {
     metrics.resize(MSPTI_ACTIVITY_KIND_COUNT);
     metrics[MSPTI_ACTIVITY_KIND_KERNEL] = std::make_shared<MetricKernelProcess>();
-    metrics[MSPTI_ACTIVITY_KIND_API] = std::make_shared<MetricApiProcess>();
+    metrics[MSPTI_ACTIVITY_KIND_API] = std::make_shared<MetricApiProcess>("API");
     metrics[MSPTI_ACTIVITY_KIND_MEMCPY] = std::make_shared<MetricMemCpyProcess>();
     metrics[MSPTI_ACTIVITY_KIND_MARKER] = std::make_shared<MetricMarkProcess>();
     metrics[MSPTI_ACTIVITY_KIND_MEMSET] = std::make_shared<MetricMemSetProcess>();
     metrics[MSPTI_ACTIVITY_KIND_HCCL] = std::make_shared<MetricHcclProcess>();
     metrics[MSPTI_ACTIVITY_KIND_MEMORY] = std::make_shared<MetricMemProcess>();
     metrics[MSPTI_ACTIVITY_KIND_COMMUNICATION] = std::make_shared<MetricCommunicationProcess>();
+    metrics[MSPTI_ACTIVITY_KIND_ACL_API] = std::make_shared<MetricApiProcess>("AclAPI");
+    metrics[MSPTI_ACTIVITY_KIND_NODE_API] = std::make_shared<MetricApiProcess>("NodeAPI");
+    metrics[MSPTI_ACTIVITY_KIND_RUNTIME_API] = std::make_shared<MetricApiProcess>("RuntimeAPI");
 }
 
 void MetricManager::RunPostTask()
@@ -90,6 +93,6 @@ void MetricManager::EnableKindSwitch(msptiActivityKind kind, bool flag)
 {
     kindSwitchs_[kind] = flag;
 }
-}
-}
-}
+} // namespace metric
+} // namespace ipc_monitor
+} // namespace dynolog_npu

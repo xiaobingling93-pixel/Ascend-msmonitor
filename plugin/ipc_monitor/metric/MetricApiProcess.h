@@ -29,23 +29,24 @@ struct ApiMetric {
     uint64_t duration;
     uint64_t timestamp;
     uint32_t deviceId;
+    std::string kind;
 public:
     std::string seriesToJson();
 };
 
 class MetricApiProcess : public MetricProcessBase {
 public:
-    MetricApiProcess() = default;
+    explicit MetricApiProcess(const std::string &kind) : MetricProcessBase(), apiKind(kind) {}
     void ConsumeMsptiData(msptiActivity *record) override;
     std::vector<ApiMetric> AggregatedData();
     void SendProcessMessage() override;
     void Clear() override;
 private:
+    std::string apiKind;
     std::mutex dataMutex;
     std::vector<std::shared_ptr<msptiActivityApi>> records;
 };
-}
-}
-}
-
-#endif
+} // namespace metric
+} // namespace ipc_monitor
+} // namespace dynolog_npu
+#endif // METRIC_API_PROCESS_H

@@ -14,12 +14,13 @@
 # limitations under the License.
 import os
 import sys
-
+import shutil
 import subprocess
 import pybind11
 
 from setuptools import setup, Extension, find_namespace_packages
 from setuptools.command.build_ext import build_ext
+from setuptools.command.build_py import build_py
 
 
 class CMakeExtension(Extension):
@@ -57,6 +58,18 @@ class CMakeBuild(build_ext):
                               cwd=self.build_temp)
 
 
+class CustomBuildPy(build_py):
+
+    def run(self):
+        super().run()
+
+        source_dir = os.path.join(os.path.dirname(__file__), 'IPCMonitor')
+        target_dir = os.path.join(self.build_lib, 'msmonitor')
+
+        os.makedirs(target_dir, exist_ok=True)
+        shutil.copytree(source_dir, target_dir, dirs_exist_ok=True)
+
+
 setup(
     name="mindstudio_monitor",
     version="26.0.0",
@@ -64,6 +77,6 @@ setup(
     packages=find_namespace_packages(include=["IPCMonitor*"]),
     include_package_data=True,
     ext_modules=[CMakeExtension('IPCMonitor')],
-    cmdclass=dict(build_ext=CMakeBuild),
-    install_requires=["pybind11"],
+    cmdclass=dict(build_ext=CMakeBuild, build_py=CustomBuildPy),
+    install_requires=["pybind11", "xlsxwriter"],
 )

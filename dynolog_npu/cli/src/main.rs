@@ -75,7 +75,8 @@ fn validate_string_max_len(s: &str) -> Result<String, String> {
     Ok(s.to_string())
 }
 
-const ALLOWED_VALUES: &[&str] = &["Marker", "Kernel", "API", "Hccl", "Memory", "MemSet", "MemCpy", "Communication"];
+const ALLOWED_VALUES: &[&str] = &["Marker", "Kernel", "API", "Hccl", "Memory", "MemSet", "MemCpy", "Communication",
+    "AclAPI", "NodeAPI", "RuntimeAPI"];
 
 fn parse_mspti_activity_kinds(src: &str)  -> Result<String, String>{
     validate_string_max_len(src)?;

@@ -59,8 +59,10 @@
    - 方式二：使用rpm软件包安装（适用于RedHat/Fedora/openSUSE等系统）。
 
      ```bash
-     rpm -ivh dynolog-*.rpm --nodeps
+     rpm -ivh dynolog*.rpm --nodeps
      ```
+
+## 编译安装
 
 ### 安装依赖
 dynolog的编译依赖如下，请确保已安装以下依赖，用户手动安装的第三方依赖由用户自行确保安全性，避免安装存在安全漏洞的版本。
@@ -182,7 +184,7 @@ cd msmonitor
    - 方式二：使用rpm软件包安装（适用于RedHat/Fedora/openSUSE等系统）。
 
      ```bash
-     rpm -ivh dynolog-*.rpm --nodeps
+     rpm -ivh dynolog*.rpm --nodeps
      ```
 
 ### 编译并安装mindstudio_monitor
@@ -211,11 +213,12 @@ Successfully installed mindstudio_monitor-<version> pybind11-<version>
    pip install pybind11
    ```
 
-2. 编译msmonitor_plugin whl包。
+2. 编译mindstudio_monitor whl包。
 
    ```
-   bash ./plugin/stub/build_stub.sh
-   python3 ./plugin/setup.py bdist_wheel
+   cd ./plugin
+   bash ./stub/build_stub.sh
+   python3 setup.py bdist_wheel
    ```
 
    编译完成后在msmonitor/plugin/dist目录下生成mindstudio_monitor whl包。
@@ -230,7 +233,7 @@ Successfully installed mindstudio_monitor-<version> pybind11-<version>
    安装成功打印如下信息：
 
    ```
-   Successfully installed mindstudio_monitor-<version> pybind11-<version>
+   Successfully installed mindstudio_monitor-<version> pybind11-<version> xlsxwriter-<version>
    ```
 
 ## 卸载

@@ -1,0 +1,78 @@
+# Copyright 2023-2026 Huawei Technologies Co., Ltd
+# All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0  (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import os
+
+
+class FileManager:
+
+    MAX_PATH_LENGTH = 4096
+    DATA_FILE_AUTHORITY = 0o640
+    DATA_DIR_AUTHORITY = 0o750
+
+    @classmethod
+    def make_dir_safety(cls, path: str):
+        msg = f"Failed to make directory: {path}"
+        if os.path.islink(path):
+            raise RuntimeError(msg)
+        if os.path.exists(path):
+            return
+        try:
+            os.makedirs(path, mode=cls.DATA_DIR_AUTHORITY, exist_ok=True)
+        except Exception as err:
+            raise RuntimeError(msg) from err
+
+    @classmethod
+    def create_file_safety(cls, path: str):
+        msg = f"Failed to create file: {path}"
+        if os.path.islink(path):
+            raise RuntimeError(msg)
+        if os.path.exists(path):
+            return
+        try:
+            os.close(os.open(path, os.O_WRONLY | os.O_CREAT, cls.DATA_FILE_AUTHORITY))
+        except Exception as err:
+            raise RuntimeError(msg) from err
+
+    @classmethod
+    def check_directory_path_writeable(cls, path):
+        cls.check_path_owner_consistent(path)
+        if os.path.islink(path):
+            msg = f"Invalid path is a soft chain: {path}"
+            raise RuntimeError(msg)
+        if not os.access(path, os.W_OK):
+            msg = f"The path permission check failed: {path}"
+            raise RuntimeError(msg)
+
+    @classmethod
+    def check_path_owner_consistent(cls, path: str):
+        if not os.path.exists(path):
+            msg = f"The path does not exist: {path}"
+            raise RuntimeError(msg)
+        if os.getuid() == 0:
+            return
+        if os.stat(path).st_uid != os.getuid():
+            msg = f"Permission mismatch: The owner of {path} does not match."
+            raise RuntimeError(msg)
+
+    @classmethod
+    def create_file_by_path(cls, output_path: str) -> None:
+        output_path = os.path.abspath(os.path.realpath(output_path))
+        if len(output_path) > cls.MAX_PATH_LENGTH:
+            raise RuntimeError("Length of input path exceeds the limit.")
+        dir_name = os.path.dirname(output_path)
+        cls.make_dir_safety(dir_name)
+        cls.create_file_safety(output_path)
+        cls.check_directory_path_writeable(output_path)

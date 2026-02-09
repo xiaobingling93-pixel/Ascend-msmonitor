@@ -13,15 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
-import os
-import importlib
+from ._ipcmonitor_C import ipcmonitor_C_module
 from .singleton import Singleton
 from .utils import get_parallel_group_info
-
-so_path = os.path.join(os.path.dirname(__file__), "lib64")
-sys.path.append(os.path.realpath(so_path))
-ipcMonitor_C_module = importlib.import_module("IPCMonitor_C")
 
 
 @Singleton
@@ -29,22 +23,22 @@ class PyDynamicMonitorProxy:
 
     @classmethod
     def init_dyno(cls, npu_id: int):
-        return ipcMonitor_C_module.init_dyno(npu_id)
+        return ipcmonitor_C_module.init_dyno(npu_id)
 
     @classmethod
     def poll_dyno(cls):
-        return ipcMonitor_C_module.poll_dyno()
+        return ipcmonitor_C_module.poll_dyno()
 
     @classmethod
     def enable_dyno_npu_monitor(cls, config_map: dict):
         if str(config_map.get("NPU_MONITOR_STOP")).lower() in ("true", "1"):
-            ipcMonitor_C_module.set_cluster_config_data({"parallel_group_info": get_parallel_group_info()})
-        ipcMonitor_C_module.enable_dyno_npu_monitor(config_map)
+            ipcmonitor_C_module.set_cluster_config_data({"parallel_group_info": get_parallel_group_info()})
+        ipcmonitor_C_module.enable_dyno_npu_monitor(config_map)
 
     @classmethod
     def finalize_dyno(cls):
-        ipcMonitor_C_module.finalize_dyno()
+        ipcmonitor_C_module.finalize_dyno()
 
     @classmethod
     def update_profiler_status(cls, status: dict):
-        ipcMonitor_C_module.update_profiler_status(status)
+        ipcmonitor_C_module.update_profiler_status(status)
