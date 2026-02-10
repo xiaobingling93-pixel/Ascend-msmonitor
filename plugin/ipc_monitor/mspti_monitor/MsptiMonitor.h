@@ -40,6 +40,7 @@ public:
     void EnableActivity(msptiActivityKind kind);
     void DisableActivity(msptiActivityKind kind);
     void SetFlushInterval(uint32_t interval);
+    void SetDuration(float duration);
     bool IsStarted();
     std::set<msptiActivityKind> GetEnabledActivities();
     void Uninit();
@@ -70,13 +71,11 @@ private:
 
 private:
     std::atomic<bool> start_{false};
-    std::mutex cvMtx_;
-    std::condition_variable cv_;
     msptiSubscriberHandle subscriber_{nullptr};
     std::mutex activityMtx_;
     std::set<msptiActivityKind> enabledActivities_;
-    std::atomic<bool> checkFlush_{false};
     std::atomic<uint32_t> flushInterval_{0};
+    std::atomic<float> duration_{0.0f};
     std::string savePath_;
     std::string exportType_;
     std::mutex filterMtx_;

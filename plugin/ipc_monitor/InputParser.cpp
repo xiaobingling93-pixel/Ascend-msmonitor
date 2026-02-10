@@ -29,6 +29,7 @@ namespace {
 
 const std::string MSPTI_ACTIVITY_KIND_KEY = "MSPTI_ACTIVITY_KIND";
 const std::string REPORT_INTERVAL_S_KEY = "REPORT_INTERVAL_S";
+const std::string DURATION_KEY = "DURATION";
 const std::string NPU_MONITOR_START_KEY = "NPU_MONITOR_START";
 const std::string NPU_MONITOR_STOP_KEY = "NPU_MONITOR_STOP";
 const std::string NPU_MONITOR_SAVE_PATH = "NPU_MONITOR_LOG_FILE";
@@ -77,6 +78,19 @@ bool isUint32(const std::string& s)
     }
 }
 
+bool isFloat(const std::string& s)
+{
+    if (s.empty() || s.find_first_not_of("0123456789.-") != std::string::npos) {
+        return false;
+    }
+    try {
+        std::stof(s);
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
 bool isBool(const std::string& s)
 {
     std::string lowerS = s;
@@ -99,6 +113,7 @@ std::unordered_map<std::string, Rule> rules = {
     {MSPTI_ACTIVITY_KIND_KEY, {true, isValidKind,
         "valid values: Marker, Kernel, API, Hccl, Memory, MemSet, MemCpy, Communication, AclAPI, NodeAPI, RuntimeAPI"}},
     {REPORT_INTERVAL_S_KEY, {true, isUint32, "valid values: uint32"}},
+    {DURATION_KEY, {true, isFloat, "valid values: float"}},
     {NPU_MONITOR_START_KEY, {true, isBool, "valid values: true/True, false/False"}},
     {NPU_MONITOR_STOP_KEY, {true, isBool, "valid values: true/True, false/False"}},
     {NPU_MONITOR_SAVE_PATH, {true, isValidPath, "valid path (max length 4096 characters)"}},
@@ -174,11 +189,13 @@ MsptiMonitorCfg InputParser::DynoLogGetOpts(std::unordered_map<std::string, std:
     auto filterItems = str2FilterItems(cmd[NPU_MONITOR_FILTER]);
     uint32_t reportTimes = 0;
     Str2Uint32(reportTimes, cmd[REPORT_INTERVAL_S_KEY]);
+    float duration = 0.0f;
+    Str2Float(duration, cmd[DURATION_KEY]);
     bool startSwitch = false;
     Str2Bool(startSwitch, cmd[NPU_MONITOR_START_KEY]);
     bool endSwitch = false;
     Str2Bool(endSwitch, cmd[NPU_MONITOR_STOP_KEY]);
-    return {activityKinds, reportTimes, startSwitch, endSwitch, true, cmd[NPU_MONITOR_SAVE_PATH],
+    return {activityKinds, reportTimes, duration, startSwitch, endSwitch, true, cmd[NPU_MONITOR_SAVE_PATH],
         cmd[NPU_MONITOR_EXPORT_TYPE], filterItems};
 }
 } // namespace ipc_monitor

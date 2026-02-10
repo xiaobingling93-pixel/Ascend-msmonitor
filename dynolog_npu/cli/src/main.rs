@@ -132,6 +132,14 @@ fn parse_iterations(src: &str) -> Result<i64, String> {
     Ok(iterations)
 }
 
+fn parse_duration(src: &str) -> Result<f32, String> {
+    let duration = src.trim().parse::<f32>().map_err(|e| format!("{}", e))?;
+    if duration < 0.0 {
+        return Err("Must be a positive number".to_string());
+    }
+    Ok(duration)
+}
+
 #[derive(Debug, Parser)]
 enum Command {
     /// Check the status of a dynolog process
@@ -239,6 +247,9 @@ enum Command {
         /// NPU monitor report interval in seconds.
         #[clap(long, default_value_t = 60)]
         report_interval_s: u32,
+        /// NPU monitor collect duration in seconds.
+        #[clap(long, value_parser = parse_duration, default_value_t = 0.0)]
+        duration: f32,
         /// MSPTI collect activity kind
         #[clap(long, value_parser = parse_mspti_activity_kinds, default_value = "Marker")]
         mspti_activity_kind: String,
@@ -759,6 +770,7 @@ fn main() -> Result<()> {
             npu_monitor_start,
             npu_monitor_stop,
             report_interval_s,
+            duration,
             mspti_activity_kind,
             log_file,
             export_type,
@@ -772,6 +784,7 @@ fn main() -> Result<()> {
                 npu_monitor_start,
                 npu_monitor_stop,
                 report_interval_s,
+                duration,
                 mspti_activity_kind,
                 log_file,
                 export_type,

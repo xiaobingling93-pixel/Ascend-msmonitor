@@ -30,6 +30,7 @@ using msptiFilterItems = std::unordered_map<msptiActivityKind, std::unordered_se
 struct MsptiMonitorCfg {
     std::set<msptiActivityKind> enableActivities;
     uint32_t reportIntervals;
+    float duration;
     bool monitorStart;
     bool monitorStop;
     bool isMonitor;

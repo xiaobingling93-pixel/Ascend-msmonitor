@@ -16,6 +16,7 @@
 #include "MsptiMonitor.h"
 
 #include <algorithm>
+#include <thread>
 #include <unistd.h>
 #include <unordered_map>
 #include <nlohmann/json.hpp>
@@ -110,7 +111,6 @@ void MsptiMonitor::Uninit()
         return;
     }
     start_.store(false);
-    cv_.notify_one();
     Thread::Stop();
     if (dataProcessor_ != nullptr) {
         dataProcessor_->Stop();
@@ -177,13 +177,14 @@ void MsptiMonitor::DisableActivity(msptiActivityKind kind)
 void MsptiMonitor::SetFlushInterval(uint32_t interval)
 {
     flushInterval_.store(interval);
-    checkFlush_.store(true);
-    if (start_.load()) {
-        cv_.notify_one();
-    }
     if (dataProcessor_ != nullptr) {
         dataProcessor_->SetReportInterval(interval);
     }
+}
+
+void MsptiMonitor::SetDuration(float duration)
+{
+    duration_.store(duration);
 }
 
 bool MsptiMonitor::IsStarted()
@@ -277,24 +278,35 @@ void MsptiMonitor::Run()
         LOG(ERROR) << "MsptiMonitor run failed, msptiActivityRegisterCallbacks failed";
         return;
     }
+    auto startTime = std::chrono::steady_clock::now();
+    auto lastFlushTime = startTime;
+    auto isDurationExpired = false;
     while (true) {
-        std::unique_lock<std::mutex> lock(cvMtx_);
-        if (flushInterval_.load() > 0) {
-            cv_.wait_for(lock, std::chrono::seconds(flushInterval_.load()),
-                         [&]() { return checkFlush_.load() || !start_.load();});
-        } else {
-            cv_.wait(lock, [&]() { return checkFlush_.load () || !start_.load();});
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+        if (duration_.load() > 0) {
+            auto currentTime = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - startTime).count();
+            if (elapsed >= static_cast<long long>(duration_.load() * 1000)) {
+                isDurationExpired = true;
+                LOG(INFO) << "MsptiMonitor run duration: " << duration_.load() << "s expired";
+                break;
+            }
         }
+
+        if (flushInterval_.load() > 0) {
+            auto currentTime = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastFlushTime).count();
+            if (elapsed >= static_cast<long long>(flushInterval_.load() * 1000)) {
+                lastFlushTime = currentTime;
+                if (msptiActivityFlushAll(1) != MSPTI_SUCCESS) {
+                    LOG(ERROR) << "MsptiMonitor run msptiActivityFlushAll failed";
+                }
+            }
+        }
+
         if (!start_.load()) {
             break;
-        }
-        if (checkFlush_.load()) {
-            checkFlush_.store(false);
-        }
-        if (flushInterval_.load() > 0) {
-            if (msptiActivityFlushAll(1) != MSPTI_SUCCESS) {
-                LOG(ERROR) << "MsptiMonitor run msptiActivityFlushAll failed";
-            }
         }
     }
     if (msptiUnsubscribe(subscriber_) != MSPTI_SUCCESS) {
@@ -307,8 +319,24 @@ void MsptiMonitor::Run()
         }
         enabledActivities_.clear();
     }
-    checkFlush_.store(false);
     flushInterval_.store(0);
+    if (isDurationExpired) {
+        if (msptiActivityFlushAll(1) != MSPTI_SUCCESS) {
+            LOG(WARNING) << "MsptiMonitor stop msptiActivityFlushAll failed";
+        }
+        start_.store(false);
+        if (dataProcessor_ != nullptr) {
+            dataProcessor_->Stop();
+            dataProcessor_ = nullptr;
+        }
+        savePath_.clear();
+        exportType_.clear();
+        {
+            std::lock_guard<std::mutex> lock(filterMtx_);
+            filterItems_.clear();
+        }
+        LOG(INFO) << "MsptiMonitor stop successfully";
+    }
 }
 
 std::atomic<uint32_t> MsptiMonitor::allocCnt{0};
