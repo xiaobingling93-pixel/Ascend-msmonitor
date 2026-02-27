@@ -91,10 +91,14 @@ class Monitor:
             print(f"[WARNING] File already exists: {file_path}, will be overwritten")
 
         try:
-            FileManager.create_file_safety(file_path)
-
             result = cls.get_result()
+            if not result:
+                print("[WARNING] No valid activity data")
+                return
 
+            print(f"[INFO] Start to save activity data file: {file_path}")
+
+            FileManager.create_file_by_path(file_path)
             with xlsxwriter.Workbook(file_path) as workbook:
                 for kind, data in result.items():
                     worksheet = workbook.add_worksheet(kind.name)
@@ -102,6 +106,8 @@ class Monitor:
                     for i, row in enumerate(data, start=1):
                         worksheet.write_row(i, 0, [str(item) for item in row.to_tuple()] +
                                             [(row.endNs - row.startNs) / cls.NS_TO_US])
+
+            print(f"[INFO] File saved successfully: {file_path}")
 
         except Exception as err:
             print(f"[ERROR] Failed to save file: {file_path}, error: {err}")
