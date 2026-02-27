@@ -68,11 +68,11 @@ class FileManager:
             raise RuntimeError(msg)
 
     @classmethod
-    def create_file_by_path(cls, output_path: str) -> None:
-        output_path = os.path.abspath(os.path.realpath(output_path))
-        if len(output_path) > cls.MAX_PATH_LENGTH:
-            raise RuntimeError("Length of input path exceeds the limit.")
-        dir_name = os.path.dirname(output_path)
+    def create_file_by_path(cls, path: str) -> None:
+        path = os.path.abspath(os.path.realpath(path))
+        if len(path) > cls.MAX_PATH_LENGTH:
+            raise RuntimeError("Length of input path exceeds the limit")
+        dir_name = os.path.dirname(path)
         cls.make_dir_safety(dir_name)
-        cls.create_file_safety(output_path)
-        cls.check_directory_path_writeable(output_path)
+        cls.create_file_safety(path)
+        cls.check_directory_path_writeable(path)
