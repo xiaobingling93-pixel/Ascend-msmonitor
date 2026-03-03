@@ -22,6 +22,7 @@ Step 4：拉起训练任务
 在训练任务中实例化DynamicProfilerMonitor对象，且在每一次训练后，调用step()方法。
 
 - 示例代码如下：
+
 ```python
 import numpy as np
 import mindspore
@@ -66,7 +67,9 @@ Step 5：使用dyno CLI使能trace dump或npu-monitor
 
 1. 动态profiling callback方式
 该使能方式与动态profiling自定义for循环方式一致，唯一区别是将step()方法适配在step_begin、step_end回调函数中。
+
 - 示例代码如下：
+
 ```python
 import mindspore
 from mindspore.profiler import DynamicProfilerMonitor
