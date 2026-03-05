@@ -3,9 +3,11 @@
 ## mindstudio_monitor模块介绍
 
 提供IPC(Inter-Process Communication)通信接口以及独立控制 MSPTI Monitor 采集和获取性能数据的能力
+
 1. IPC控制通道: profiler backend 向 dynolog daemon 获取 profiler 配置
 2. IPC数据通道: MSPTI Monitor 向 dynolog daemon 发送性能数据
 3. 轻量化性能数据采集
+
   * 控制 MSPTI Monitor 启停采集数据
   * 在线获取 MSPTI Monitor 采集的性能数据
   * 将 MSPTI Monitor 采集的性能数据以 Excel 格式导出到本地

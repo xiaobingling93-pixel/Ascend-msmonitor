@@ -24,7 +24,7 @@ nputrace作为dyno命令的子命令，执行命令时需配置--certs-dir参数
 dyno --certs-dir <CERT_DIR> nputrace [options]
 ```
 
-<CERT_DIR>配置为证书路径，如果不使用TLS证书密钥，则设置为NO_CERTS；[options]为nputrace功能的参数，详细介绍如下**参数说明**。
+`CERT_DIR`配置为证书路径，如果不使用TLS证书密钥，则设置为NO_CERTS；[options]为nputrace功能的参数，详细介绍如下**参数说明**。
 
 **参数说明**
 
@@ -55,7 +55,7 @@ dyno --certs-dir <CERT_DIR> nputrace [options]
 | --profiler-level      | 可选 | 控制Profiler的采集等级，取值为：<br/>&#8226; Level_none：不采集所有Level层级控制的数据，即关闭--profiler_level。<br/>&#8226; Level0：采集上层应用数据、底层NPU数据以及NPU上执行的算子信息。<br/>&#8226; Level1：效果为在Level0的基础上，多采集CANN层AscendCL数据和NPU上执行的AI Core性能指标信息、开启--aic-metrics PipeUtilization、生成通信算子的communication.json和communication_matrix.json以及api_statistic.csv文件。<br/>&#8226; Level2：效果为在Level1的基础上多采集CANN层Runtime数据以及AI CPU（data_preprocess.csv文件）数据。<br/>&#8226; 默认值为Level0。 |     Y     |      Y      |
 | --aic-metrics         | 可选 | AI Core的性能指标采集项，取值为：<br/>&#8226; AiCoreNone：关闭AI Core的性能指标采集。<br/>&#8226; PipeUtilization：计算单元和搬运单元耗时占比。<br/>&#8226; ArithmeticUtilization：各种计算类指标占比统计。<br/>&#8226; Memory：外部内存读写类指令占比。<br/>&#8226; MemoryL0：内部L0内存读写类指令占比。<br/>&#8226; ResourceConflictRatio：流水线队列类指令占比。<br/>&#8226; MemoryUB：内部UB内存读写类指令占比。<br/>&#8226; L2Cache：读写cache命中次数和缺失后重新分配次数。<br/>&#8226; MemoryAccess：算子在核上访存的带宽数据量。<br/>当--profiler-level设置为Level_none或Level0，默认值为AiCoreNone，当--profiler-level设置为Level1或Level2，默认值为PipeUtilization。 |     Y     |      Y      |
 | --export-type         | 可选 | profiler解析导出数据的类型，取值为：<br/>&#8226; Text：表示解析为.json和.csv格式的timeline和summary文件以及汇总所有性能数据的.db格式文件。<br/>&#8226; Db：表示仅解析为汇总所有性能数据的.db格式文件，使用MindStudio Insight工具展示。<br/>默认值为Text。 |     Y     |      Y      |
-| --gc-detect-threshold | 可选 | GC检测阈值，Option<f32>类型，单位ms，只采集超过阈值的GC事件。默认不设置时不开启GC检测。                                                                                                                                                                                                                           |     Y     |      N      |
+| --gc-detect-threshold | 可选 | GC检测阈值，Option\<f32\>类型，单位ms，只采集超过阈值的GC事件。默认不设置时不开启GC检测。                                                                                                                                                                                                                           |     Y     |      N      |
 | --host-sys            | 可选 | 采集host侧系统数据，取值为：<br/>&#8226; cpu：进程级别的CPU利用率。<br/>&#8226; mem：进程级别的内存利用率。<br/>&#8226; disk：进程级别的磁盘I/O利用率。<br/>&#8226; network：系统级别的网络I/O利用率。<br/>&#8226; osrt：进程级别的syscall和pthreadcall。<br/>可以设置单个或多个，多个类型以逗号分隔，例如：--host-sys cpu,mem。<br/>默认未配置，表示未开启Host侧系统数据采集。 |     Y     |      Y      |
 | --sys-io              | 可选 | NIC、ROCE数据采集开关，action类型，配置该参数表示开启采集，默认未配置表示不采集。                                                                                                                                                                                                            |     Y     |      Y      |
 | --sys-interconnection | 可选 | 集合通信带宽数据（HCCS）、PCIe、片间传输带宽数据采集开关，action类型，配置该参数表示开启采集，默认未配置表示不采集。                                                                                                                                                                                                   |     Y     |      Y      |
@@ -70,11 +70,13 @@ dyno --certs-dir <CERT_DIR> nputrace [options]
    ```
 
 2. 在训练或推理任务拉起窗口使能dynolog环境变量。
+
    ```bash
    export MSMONITOR_USE_DAEMON=1
    ```
 
 3. 启动训练或推理任务。
+
    ```bash
    # 训练任务中需要使用PyTorch的优化器/继承原生优化器
    bash train.sh
