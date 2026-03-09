@@ -33,7 +33,7 @@ using APIFormat = std::vector<std::tuple<uint64_t, uint64_t, uint16_t, uint64_t,
 //      opId, relay, retry, dataType, algType, count, opType, deviceId
 using CommunicationOpFormat = std::vector<std::tuple<uint64_t, uint64_t, uint64_t, uint64_t, uint64_t,
         uint32_t, int32_t, int32_t, uint16_t, uint64_t, uint64_t, uint64_t, uint32_t>>;
-// COMPUTE_TASK_INFO: name, globalTaskId, blockDim, mixBlockDim, taskType, opType, inputFormats, inputDataTypes,
+// COMPUTE_TASK_INFO: name, globalTaskId, blockNum, mixBlockNum, taskType, opType, inputFormats, inputDataTypes,
 //      inputShapes, outputFormats, outputDataTypes, outputShapes, attrInfo, opState, hf32Eligible
 using ComputeTaskInfoFormat = std::vector<std::tuple<uint64_t, uint64_t, uint32_t, uint32_t, uint64_t, uint64_t,
         uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t>>;

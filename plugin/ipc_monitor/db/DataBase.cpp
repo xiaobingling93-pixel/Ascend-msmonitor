@@ -82,8 +82,8 @@ const TableColumns TASK = {
 const TableColumns COMPUTE_TASK_INFO = {
     {"name", SQL_INT_TYPE},
     {"globalTaskId", SQL_INT_TYPE},
-    {"blockDim", SQL_INT_TYPE},
-    {"mixBlockDim", SQL_INT_TYPE},
+    {"blockNum", SQL_INT_TYPE},
+    {"mixBlockNum", SQL_INT_TYPE},
     {"taskType", SQL_INT_TYPE},
     {"opType", SQL_INT_TYPE},
     {"inputFormats", SQL_INT_TYPE},
