@@ -183,7 +183,7 @@ msptiFilterItems str2FilterItems(const std::string& filterStr)
 MsptiMonitorCfg InputParser::DynoLogGetOpts(std::unordered_map<std::string, std::string>& cmd)
 {
     if (!validateArgs(cmd, rules)) {
-        return {{MSPTI_ACTIVITY_KIND_INVALID}, 0, false, false, false, "", ""};
+        return {{MSPTI_ACTIVITY_KIND_INVALID}, 0, 0.0f, false, false, false, "", "", {}};
     }
     auto activityKinds = str2Kinds(cmd[MSPTI_ACTIVITY_KIND_KEY]);
     auto filterItems = str2FilterItems(cmd[NPU_MONITOR_FILTER]);
