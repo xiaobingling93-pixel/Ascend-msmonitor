@@ -74,7 +74,7 @@ ErrCode DynoLogNpuMonitor::DealMonitorReq(MsptiMonitorCfg& cmd)
             msptiMonitor->SetExportType(cmd.export_type);
         }
         msptiMonitor->Start();
-        LOG(INFO) << "Start mspti monitor thread successfully";
+        LOG(INFO) << "Start mspti monitor thread successfully, rankid: " << GetRankId();
     }
     if (msptiMonitor->IsStarted()) {
         msptiMonitor->SetFilterItems(cmd.filterItems);
