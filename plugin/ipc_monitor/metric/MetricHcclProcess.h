@@ -31,7 +31,7 @@ struct HcclMetric {
     uint64_t timestamp;
     uint32_t deviceId;
 public:
-    std::string seriesToJson();
+    std::string seriesToJson() const;
 };
 
 class MetricHcclProcess : public MetricProcessBase {

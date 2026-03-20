@@ -21,7 +21,7 @@ namespace dynolog_npu {
 namespace ipc_monitor {
 namespace metric {
 
-std::string MemSetMetric::seriesToJson()
+std::string MemSetMetric::seriesToJson() const
 {
     nlohmann::json jsonMsg;
     jsonMsg["kind"] = "MemSet";

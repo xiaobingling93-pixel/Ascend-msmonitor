@@ -31,7 +31,7 @@ struct ApiMetric {
     uint32_t deviceId;
     std::string kind;
 public:
-    std::string seriesToJson();
+    std::string seriesToJson() const;
 };
 
 class MetricApiProcess : public MetricProcessBase {

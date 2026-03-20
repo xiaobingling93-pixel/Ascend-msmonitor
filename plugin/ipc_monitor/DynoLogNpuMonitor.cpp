@@ -125,7 +125,7 @@ void DynoLogNpuMonitor::EnableMsptiMonitor(std::unordered_map<std::string, std::
     }
 }
 
-void DynoLogNpuMonitor::Finalize()
+void DynoLogNpuMonitor::Finalize() const
 {
     MsptiMonitor::GetInstance()->Uninit();
 }
