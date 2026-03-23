@@ -21,7 +21,7 @@ namespace dynolog_npu {
 namespace ipc_monitor {
 namespace metric {
 
-std::string KernelMetric::seriesToJson()
+std::string KernelMetric::seriesToJson() const
 {
     nlohmann::json jsonMsg;
     jsonMsg["kind"] = "Kernel";

@@ -33,7 +33,7 @@ public:
     ErrCode DealMonitorReq(MsptiMonitorCfg& cmd);
     std::string Poll() override;
     void EnableMsptiMonitor(std::unordered_map<std::string, std::string>& cfg_map);
-    void Finalize();
+    void Finalize() const;
     void UpdateNpuStatus(const NpuStatus& status, const std::string& msgType);
     void SetNpuId(int id) override
     {

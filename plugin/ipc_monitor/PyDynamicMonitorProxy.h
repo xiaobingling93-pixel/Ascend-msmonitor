@@ -80,7 +80,7 @@ public:
         DynoLogNpuMonitor::GetInstance()->EnableMsptiMonitor(config_map);
     }
 
-    void FinalizeDyno()
+    void FinalizeDyno() const
     {
         DynoLogNpuMonitor::GetInstance()->Finalize();
     }

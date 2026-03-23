@@ -28,7 +28,7 @@ namespace metric {
 
 constexpr size_t COMPLETE_RANGE_DATA_SIZE = 4;
 
-std::string MarkMetric::seriesToJson()
+std::string MarkMetric::seriesToJson() const
 {
     nlohmann::json jsonMsg;
     jsonMsg["kind"] = "Marker";

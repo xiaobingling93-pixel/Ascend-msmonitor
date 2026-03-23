@@ -29,7 +29,7 @@ struct MemCpyMetric {
     uint64_t timestamp;
     uint32_t deviceId;
 public:
-    std::string seriesToJson();
+    std::string seriesToJson() const;
 };
 
 class MetricMemCpyProcess : public MetricProcessBase {

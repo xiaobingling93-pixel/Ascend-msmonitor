@@ -22,7 +22,7 @@ namespace dynolog_npu {
 namespace ipc_monitor {
 namespace metric {
 
-std::string HcclMetric::seriesToJson()
+std::string HcclMetric::seriesToJson() const
 {
     nlohmann::json jsonMsg;
     jsonMsg["kind"] = "Hccl";

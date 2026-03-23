@@ -200,7 +200,7 @@ public:
     {
         int32_t msg_size = -1;
 
-        if (!read_helper((uint8_t*)&msg_size, sizeof(msg_size)) || msg_size <= 0 || msg_size >= MAX_MESSAGE_LEN) {
+        if (read_helper((uint8_t*)&msg_size, sizeof(msg_size)) <= 0 || msg_size <= 0 || msg_size >= MAX_MESSAGE_LEN) {
             LOG(ERROR) << "Invalid message size = " << msg_size;
             return "";
         }
@@ -387,7 +387,7 @@ static bool is_cert_revoked(X509* cert, X509_STORE* store)
     STACK_OF(X509_CRL)* crls = nullptr;
     try {
         // 初始化证书验证上下文
-        if (!X509_STORE_CTX_init(ctx, store, cert, nullptr)) {
+        if (X509_STORE_CTX_init(ctx, store, cert, nullptr) == 0) {
             LOG(ERROR) << "Failed to initialize certificate store context";
             X509_STORE_CTX_free(ctx);
             return false;
