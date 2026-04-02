@@ -112,4 +112,4 @@
 
 ## 安装方式
 
-mindstudio_monitor模块安装请参见《[msMonitor工具安装指南](./install_guide.md)》。
+mindstudio_monitor模块安装请参见《[msMonitor工具安装指南](../getting_started/install_guide.md)》。

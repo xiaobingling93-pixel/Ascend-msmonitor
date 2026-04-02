@@ -4,8 +4,8 @@
 <div align="center">
   <p><b>昇腾集群在线性能监控与动态采集工具</b></p>
   <p>
-    <a href="./docs/zh/quick_start.md">🚀 快速入门</a> |
-    <a href="./docs/zh/install_guide.md">🛠️ 安装指南</a> |
+    <a href="./docs/zh/getting_started/quick_start.md">🚀 快速入门</a> |
+    <a href="./docs/zh/getting_started/install_guide.md">🛠️ 安装指南</a> |
     <a href="./docs/zh/release_notes.md">📦 版本说明</a> |
     <a href="./docs/zh/overview.md">📖 工具文档</a> |
     <a href="https://gitcode.com/Ascend/msmonitor/issues">💬 问题反馈</a>
@@ -32,8 +32,8 @@ MindStudio Monitor（`msMonitor`）是面向昇腾集群场景的在线性能监
 
 | 组件 | 作用 | 文档 |
 | --- | --- | --- |
-| `Dynolog daemon` | 服务端守护进程，负责接收 dyno 请求并触发监控与采集。 | [dynolog 使用说明](./docs/zh/dynolog_instruct.md) |
-| `Dyno CLI` | 客户端命令行入口，用于下发 `npu-monitor` 和 `nputrace` 命令。 | [dyno 使用说明](./docs/zh/dyno_instruct.md) |
+| `Dynolog daemon` | 服务端守护进程，负责接收 dyno 请求并触发监控与采集。 | [dynolog 使用说明](./docs/zh/user_guide/dynolog_instruct.md) |
+| `Dyno CLI` | 客户端命令行入口，用于下发 `npu-monitor` 和 `nputrace` 命令。 | [dyno 使用说明](./docs/zh/user_guide/dyno_instruct.md) |
 | `MSPTI Monitor` | 基于 MSPTI 的采集模块，负责获取并上报性能数据。 | - |
 
 ## 🔍 目录结构
@@ -63,9 +63,9 @@ msMonitor 提供以下核心能力：
 
 | 功能名称 | 功能简介 | 说明文档 |
 | --- | --- | --- |
-| **npu-monitor** | 轻量常驻后台，持续监控关键算子耗时，适合在线观察性能波动。 | [点击查看](./docs/zh/npumonitor_instruct.md) |
-| **nputrace** | 动态触发框架、CANN 和 Device 侧性能数据采集与解析，无需中断任务运行。 | [点击查看](./docs/zh/nputrace_instruct.md) |
-| **Monitor API** | 提供 Python 接口，采集计算类算子、通信类算子、API、Runtime API、Mstx 等性能数据。 | [点击查看](./docs/zh/monitor_feature.md) |
+| **npu-monitor** | 轻量常驻后台，持续监控关键算子耗时，适合在线观察性能波动。 | [点击查看](./docs/zh/user_guide/npumonitor_instruct.md) |
+| **nputrace** | 动态触发框架、CANN 和 Device 侧性能数据采集与解析，无需中断任务运行。 | [点击查看](./docs/zh/user_guide/nputrace_instruct.md) |
+| **Monitor API** | 提供 Python 接口，采集计算类算子、通信类算子、API、Runtime API、Mstx 等性能数据。 | [点击查看](./docs/zh/advanced_features/monitor_feature.md) |
 
 > [!NOTE]
 > 由于底层资源限制，`npu-monitor` 与 `nputrace` 不能同时开启。
@@ -75,15 +75,15 @@ msMonitor 提供以下核心能力：
 msMonitor 当前支持**软件包安装**和**编译安装**两种方式：
 
 - 软件包安装：适合直接部署使用，推荐优先采用，详见
-  [《msMonitor 工具安装指南》](./docs/zh/install_guide.md)。
+  [《msMonitor 工具安装指南》](./docs/zh/getting_started/install_guide.md)。
 - 编译安装：适合源码调试、二次开发与定制构建，详见
-  [《msMonitor 工具安装指南》](./docs/zh/install_guide.md#编译安装)。
-- 升级、卸载与日志：详见 [《msMonitor 工具安装指南》](./docs/zh/install_guide.md)。
+  [《msMonitor 工具安装指南》](./docs/zh/getting_started/install_guide.md#编译安装)。
+- 升级、卸载与日志：详见 [《msMonitor 工具安装指南》](./docs/zh/getting_started/install_guide.md)。
 
 ## 🚀 快速入门
 
 首次使用 msMonitor 时，推荐直接按下面这条主线完成从安装到采集的端到端体验。
-更完整的安装说明请参见 [《安装指南》](./docs/zh/install_guide.md)。
+更完整的安装说明请参见 [《安装指南》](./docs/zh/getting_started/install_guide.md)。
 
 1. 选择匹配版本并下载安装包。
 
@@ -113,7 +113,7 @@ msMonitor 当前支持**软件包安装**和**编译安装**两种方式：
 3. 启动 `dynolog` daemon 进程。
 
    ```bash
-   dynolog --enable-ipc-monitor --certs-dir /home/server_certs
+   dynolog --enable-ipc-monitor --certs-dir /home/ssl_certs
    ```
 
 4. 配置环境变量并启动训练或推理任务。
@@ -128,7 +128,7 @@ msMonitor 当前支持**软件包安装**和**编译安装**两种方式：
 5. 先使用 `npu-monitor` 观察关键算子耗时。
 
    ```bash
-   dyno --certs-dir /home/client_certs npu-monitor \
+   dyno --certs-dir /home/ssl_certs npu-monitor \
      --npu-monitor-start --report-interval-s 30 \
      --mspti-activity-kind Kernel
    ```
@@ -137,8 +137,8 @@ msMonitor 当前支持**软件包安装**和**编译安装**两种方式：
    采集详细数据。
 
    ```bash
-   dyno --certs-dir /home/client_certs npu-monitor --npu-monitor-stop
-   dyno --certs-dir /home/client_certs nputrace \
+   dyno --certs-dir /home/ssl_certs npu-monitor --npu-monitor-stop
+   dyno --certs-dir /home/ssl_certs nputrace \
      --start-step 10 --iterations 2 --activities CPU,NPU \
      --analyse --data-simplification false \
      --log-file /tmp/profile_data
@@ -147,11 +147,11 @@ msMonitor 当前支持**软件包安装**和**编译安装**两种方式：
 7. 按需查看详细说明。
 
    - `npu-monitor` 使用说明：
-     [`docs/zh/npumonitor_instruct.md`](./docs/zh/npumonitor_instruct.md)
+     [`docs/zh/user_guide/npumonitor_instruct.md`](./docs/zh/user_guide/npumonitor_instruct.md)
    - `nputrace` 使用说明：
-     [`docs/zh/nputrace_instruct.md`](./docs/zh/nputrace_instruct.md)
+     [`docs/zh/user_guide/nputrace_instruct.md`](./docs/zh/user_guide/nputrace_instruct.md)
    - `MindSpore` 适配说明：
-     [`docs/zh/mindspore_adapter_instruct.md`](./docs/zh/mindspore_adapter_instruct.md)
+     [`docs/zh/user_guide/mindspore_adapter_instruct.md`](./docs/zh/user_guide/mindspore_adapter_instruct.md)
 
 ## 版本配套说明
 
@@ -179,9 +179,9 @@ msMonitor 由以下三个交付件组成：
 
 ## 📝 相关说明
 
-- [《安全声明》](./docs/zh/security_statement.md)
-- [《漏洞机制说明》](./docs/zh/mindstudio_vulnerability_handling_procedure.md)
-- [《公网地址声明》](./docs/zh/public_ip_address.md)
+- [《安全声明》](./docs/zh/legal/security_statement.md)
+- [《漏洞机制说明》](./docs/zh/legal/mindstudio_vulnerability_handling_procedure.md)
+- [《公网地址声明》](./docs/zh/legal/public_ip_address.md)
 - [《贡献指南》](./CONTRIBUTING.md)
 - [《License》](./LICENSE)
 - [《文档 License》](./docs/LICENSE)

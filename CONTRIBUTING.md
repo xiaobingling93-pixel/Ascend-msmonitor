@@ -34,7 +34,7 @@
 
    ```bash
    git clone https://gitcode.com/<your-username>/msmonitor.git
-   cd msMonitor
+   cd msmonitor
    ```
 
 2. 在个人仓进行代码开发
@@ -47,7 +47,7 @@
 
 4. 编译测试
 
-   将开发完成的代码编译成whl包进行测试，详细步骤请参见《[msMonitor工具安装指南](docs/zh/install_guide.md)》。
+   将开发完成的代码编译成whl包进行测试，详细步骤请参见《[msMonitor工具安装指南](docs/zh/getting_started/install_guide.md)》。
 
 5. 文档开发
 
@@ -208,7 +208,7 @@ bash scripts/run_st.sh
 示例：
 
 ```text
-feat：添加内存使用分析功能
+feat:添加内存使用分析功能
 
 - 实现内存数据采集模块
 - 添加内存使用趋势分析算法
