@@ -1,4 +1,4 @@
-# Monitor
+# Monitor 特性介绍
 
 ## 简介
 
@@ -6,7 +6,7 @@ Monitor 是集成在MindStudio Monitor中的一套接口，用户可以通过调
 
 ## 使用前准备
 
-安装msMonitor工具。详情请参见《[msMonitor工具安装指南](./install_guide.md)》，推荐使用下载软件包安装。
+安装msMonitor工具。详情请参见《[msMonitor工具安装指南](../getting_started/install_guide.md)》，推荐使用下载软件包安装。
 
 ## Monitor功能介绍
 
@@ -16,7 +16,7 @@ Monitor 是集成在MindStudio Monitor中的一套接口，用户可以通过调
 
 **接口说明**
 
-参考mindstudio_monitor的[Monitor特性接口说明](mindstudio_monitor_api_reference.md#monitor特性接口说明)。
+参考mindstudio_monitor的[Monitor特性接口说明](./mindstudio_monitor_api_reference.md#monitor特性接口说明)。
 
 **使用示例**
 
@@ -83,7 +83,7 @@ Monitor 是集成在MindStudio Monitor中的一套接口，用户可以通过调
    monitor.save("monitor_result.xlsx")
    ```
 
-3. （可选）可通过在线方式获取性能数据，返回的数据结构请参考[ActivityData数据结构](mindstudio_monitor_api_reference.md#activitydata数据结构)。
+3. （可选）可通过在线方式获取性能数据，返回的数据结构请参考[ActivityData数据结构](./mindstudio_monitor_api_reference.md#activitydata数据结构)。
 
    ```python
    # 获取性能数据并打印
@@ -106,7 +106,7 @@ Monitor 是集成在MindStudio Monitor中的一套接口，用户可以通过调
 
 如下图所示：
 
-![Monitor落盘数据](./figures/monitor_feature_result.png)
+![Monitor落盘数据](../figures/monitor_feature_result.png)
 
 各个Sheet页的字段说明如下：
 

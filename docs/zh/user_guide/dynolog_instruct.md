@@ -1,4 +1,4 @@
-# dynolog
+# dynolog使用说明
 
 ## 简介
 
@@ -30,5 +30,5 @@ sudo systemctl start dynolog
 
 ```bash
 # 方法2：命令行执行
-dynolog --enable-ipc-monitor --certs-dir /home/server_certs
+dynolog --enable-ipc-monitor --certs-dir /home/ssl_certs
 ```

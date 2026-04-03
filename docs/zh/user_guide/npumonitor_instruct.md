@@ -1,4 +1,4 @@
-# npu-monitor
+# npu-monitor使用说明
 
 ## 简介
 
@@ -48,11 +48,11 @@ npu-monitor的SUBCOMMANDS（子命令）选项如下。
 
    ```bash
    # 命令行方式开启dynolog daemon
-   dynolog --enable-ipc-monitor --certs-dir /home/server_certs
+   dynolog --enable-ipc-monitor --certs-dir /home/ssl_certs
 
    # 如需使用Tensorboard展示数据，传入参数--metric_log_dir用于指定Tensorboard文件落盘路径
    # 示例：
-   dynolog --enable-ipc-monitor --certs-dir /home/server_certs --metric_log_dir /tmp/metric_log_dir
+   dynolog --enable-ipc-monitor --certs-dir /home/ssl_certs --metric_log_dir /tmp/metric_log_dir
    ```
 
 2. 配置dynolog环境变量。
@@ -88,26 +88,26 @@ npu-monitor的SUBCOMMANDS（子命令）选项如下。
 
    ```bash
    # 示例1：开启性能监控，使用默认配置
-   dyno --certs-dir /home/client_certs npu-monitor --npu-monitor-start
+   dyno --certs-dir /home/ssl_certs npu-monitor --npu-monitor-start
 
    # 示例2：暂停性能监控
-   dyno --certs-dir /home/client_certs npu-monitor --npu-monitor-stop
+   dyno --certs-dir /home/ssl_certs npu-monitor --npu-monitor-stop
 
    # 示例3：性能监控过程中修改配置
    # 上报周期30s, 上报数据类型Marker和Kernel，保留类型为Kernel且算子名称中包含“Mul”关键词的数据
-   dyno --certs-dir /home/client_certs npu-monitor --report-interval-s 30 --mspti-activity-kind Marker,Kernel --filter Kernel:Mul
+   dyno --certs-dir /home/ssl_certs npu-monitor --report-interval-s 30 --mspti-activity-kind Marker,Kernel --filter Kernel:Mul
 
    # 示例4：性能监控开启时修改配置
    # 上报周期30s, 上报数据类型Marker和Kernel，保留类型为Kernel且算子名称中包含“Mul”关键词的数据
-   dyno --certs-dir /home/client_certs npu-monitor --npu-monitor-start --report-interval-s 30 --mspti-activity-kind Marker,Kernel --filter Kernel:Mul
+   dyno --certs-dir /home/ssl_certs npu-monitor --npu-monitor-start --report-interval-s 30 --mspti-activity-kind Marker,Kernel --filter Kernel:Mul
 
    # 示例5：性能监控开启时修改配置，开启数据采集落盘
    # 数据落盘路径为/tmp/msmonitor_db，落盘周期为30s，采集数据类型为Marker，Kernel，Communication
-   dyno --certs-dir /home/client_certs npu-monitor --npu-monitor-start --report-interval-s 30 --mspti-activity-kind Marker,Kernel,Communication --log-file /tmp/msmonitor_db
+   dyno --certs-dir /home/ssl_certs npu-monitor --npu-monitor-start --report-interval-s 30 --mspti-activity-kind Marker,Kernel,Communication --log-file /tmp/msmonitor_db
 
    # 示例6：多机场景下性能监控开启时修改配置
    # 多机场景下向特定机器x.x.x.x发送参数信息，参数表示上报周期30s, 上报数据类型Marker和Kernel
-   dyno --certs-dir /home/client_certs --hostname x.x.x.x npu-monitor --npu-monitor-start --report-interval-s 30 --mspti-activity-kind Marker,Kernel
+   dyno --certs-dir /home/ssl_certs --hostname x.x.x.x npu-monitor --npu-monitor-start --report-interval-s 30 --mspti-activity-kind Marker,Kernel
    ```
 
 ## 输出结果文件说明

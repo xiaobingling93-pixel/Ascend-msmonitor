@@ -44,7 +44,7 @@ source $HOME/.cargo/env
 
 ### 2.2 TLS 证书环境
 
-若开发和测试场景需要验证 dyno CLI 与 dynolog daemon 的 TLS 通信，需要额外准备客户端和服务端证书目录。目录规范可参见 [《安装指南》](../install_guide.md)。
+若开发和测试场景需要验证 dyno CLI 与 dynolog daemon 的 TLS 通信，需要额外准备客户端和服务端证书目录。目录规范可参见 [《安装指南》](../getting_started/install_guide.md)。
 
 ## 3. 开发步骤
 
@@ -124,7 +124,7 @@ cd msmonitor
 1. 重点关注 dyno CLI 参数处理。
 2. 重点关注 dynolog daemon 的监控请求下发和后台采集逻辑。
 3. 若涉及 MSPTI 侧数据处理，需要联动 `plugin` 模块。
-4. 同步更新 `docs/zh/npumonitor_instruct.md`。
+4. 同步更新 `docs/zh/user_guide/npumonitor_instruct.md`。
 
 #### 3.5.2 开发 `nputrace`
 
@@ -133,7 +133,7 @@ cd msmonitor
 1. 重点关注 dyno 请求参数和 daemon 触发逻辑。
 2. 核对与框架 Profiler、CANN 和 Device 侧数据采集的联动逻辑。
 3. 若涉及日志、输出路径、离线解析或展示，需同步验证端到端流程。
-4. 同步更新 `docs/zh/nputrace_instruct.md`。
+4. 同步更新 `docs/zh/user_guide/nputrace_instruct.md`。
 
 #### 3.5.3 开发 Monitor API
 
@@ -141,7 +141,7 @@ cd msmonitor
 
 1. 优先关注 `plugin/IPCMonitor`、`plugin/ipc_monitor`。
 2. 若涉及扩展模块暴露，需同步检查 `bindings.cpp` 和 `setup.py`。
-3. 同步更新 `docs/zh/monitor_feature.md` 和 `docs/zh/mindstudio_monitor_api_reference.md`。
+3. 同步更新 `docs/zh/advanced_features/monitor_feature.md` 和 `docs/zh/advanced_features/mindstudio_monitor_api_reference.md`。
 
 ## 4. 构建与安装
 
@@ -197,13 +197,13 @@ pip install mindstudio_monitor-{mindstudio_version}-cp{python_version}-cp{python
 
 ```bash
 # 启动 dynolog daemon
-dynolog --enable-ipc-monitor --certs-dir /home/server_certs
+dynolog --enable-ipc-monitor --certs-dir /home/ssl_certs
 
 # 启动 npu-monitor
-dyno --certs-dir /home/client_certs npu-monitor --npu-monitor-start --report-interval-s 30 --mspti-activity-kind Kernel
+dyno --certs-dir /home/ssl_certs npu-monitor --npu-monitor-start --report-interval-s 30 --mspti-activity-kind Kernel
 
 # 触发 nputrace
-dyno --certs-dir /home/client_certs nputrace --start-step 10 --iterations 2 --activities CPU,NPU --analyse --data-simplification false --log-file /tmp/profile_data
+dyno --certs-dir /home/ssl_certs nputrace --start-step 10 --iterations 2 --activities CPU,NPU --analyse --data-simplification false --log-file /tmp/profile_data
 ```
 
 ## 5. 测试与验证
@@ -256,14 +256,14 @@ bash scripts/run_st.sh
 
 | 改动类型 | 需同步更新的文档 |
 | --- | --- |
-| 安装、编译、升级、卸载 | `docs/zh/install_guide.md` |
-| 快速体验流程 | `docs/zh/quick_start.md` |
-| dynolog 服务端 | `docs/zh/dynolog_instruct.md` |
-| dyno 客户端 | `docs/zh/dyno_instruct.md` |
-| `npu-monitor` 功能 | `docs/zh/npumonitor_instruct.md` |
-| `nputrace` 功能 | `docs/zh/nputrace_instruct.md` |
-| Monitor API | `docs/zh/monitor_feature.md` |
-| API 参考 | `docs/zh/mindstudio_monitor_api_reference.md` |
+| 安装、编译、升级、卸载 | `docs/zh/getting_started/install_guide.md` |
+| 快速体验流程 | `docs/zh/getting_started/quick_start.md` |
+| dynolog 服务端 | `docs/zh/user_guide/dynolog_instruct.md` |
+| dyno 客户端 | `docs/zh/user_guide/dyno_instruct.md` |
+| `npu-monitor` 功能 | `docs/zh/user_guide/npumonitor_instruct.md` |
+| `nputrace` 功能 | `docs/zh/user_guide/nputrace_instruct.md` |
+| Monitor API | `docs/zh/advanced_features/monitor_feature.md` |
+| API 参考 | `docs/zh/advanced_features/mindstudio_monitor_api_reference.md` |
 | 版本发布信息 | `docs/zh/release_notes.md` |
 
 ## 7. 提交流程建议
