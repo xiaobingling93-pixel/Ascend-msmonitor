@@ -3,7 +3,7 @@
 下面通过msMonitor常见的使用场景介绍msMonitor工具快速入门：
 
 1. 先使用npu-monitor功能获取关键算子耗时。
-2. 当发现监控到关键算子耗时劣化，使用nputrace功能采集详细性能数据做分析。
+2. 当发现监测到关键算子耗时劣化，使用nputrace功能采集详细性能数据做分析。
 
 **前提条件**
 
@@ -42,7 +42,7 @@
    bash run_ai_task.sh
    ```
 
-5. 使用dyno命令行触发npu-monitor监控关键算子耗时。
+5. 使用dyno命令行触发npu-monitor监测关键算子耗时。
 
    ```bash
    # 开启npu-monitor，上报周期30s, 上报数据类型为Kernel

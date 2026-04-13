@@ -122,7 +122,7 @@ cd msmonitor
 若本次改动涉及 `npu-monitor`：
 
 1. 重点关注 dyno CLI 参数处理。
-2. 重点关注 dynolog daemon 的监控请求下发和后台采集逻辑。
+2. 重点关注 dynolog daemon 的监测请求下发和后台采集逻辑。
 3. 若涉及 MSPTI 侧数据处理，需要联动 `plugin` 模块。
 4. 同步更新 `docs/zh/user_guide/npumonitor_instruct.md`。
 
