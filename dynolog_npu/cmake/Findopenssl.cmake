@@ -51,7 +51,7 @@ endif()
 message("start to build openssl...")
 execute_process(
     WORKING_DIRECTORY ${DIR_NAME}
-    COMMAND ./config -fPIC no-shared --prefix=${BUILD_DEPENDENCY_PATH} --libdir=${LIBDIR}
+    COMMAND ./config -fPIC no-shared no-tests --prefix=${BUILD_DEPENDENCY_PATH} --libdir=${LIBDIR}
     RESULT_VARIABLE RESULT
 )
 if (NOT RESULT EQUAL 0)
@@ -69,8 +69,12 @@ endif()
 
 execute_process(
     WORKING_DIRECTORY ${DIR_NAME}
-    COMMAND make install
+    COMMAND make install_sw
+    RESULT_VARIABLE RESULT
 )
+if (NOT RESULT EQUAL 0)
+    message(FATAL_ERROR "Failed to install openssl. ${RESULT}")
+endif()
 
 file(GLOB OPENSSL_LIB "${BUILD_DEPENDENCY_PATH}/${LIBDIR}/libssl.a")
 file(GLOB CRYPTO_LIB "${BUILD_DEPENDENCY_PATH}/${LIBDIR}/libcrypto.a")
